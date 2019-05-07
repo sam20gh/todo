@@ -40,7 +40,9 @@ const createFakeElements = () => {
 const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
   projectLi.id = `project-list${project.id}`
-  projectLi.innerText = `${project.name}`
+  projectLi.innerHTML = `
+    <a href="#">${project.name}</a>
+  `
 
   const projectList = document.querySelector('#project-list')
   projectList.append(projectLi)
@@ -50,15 +52,27 @@ const renderProjects = (projects) => {
   projects.forEach(renderProjectLi)
 }
 
-const renderTaskLi = (task) => {
-  const taskLi = document.createElement('li')
-  taskLi.id = `task-list${task.id}`
-  taskLi.innerText = `${task.description}`
-  document.body.append(taskLi)  // TO UPDATE ONCE CONTAINER IDENTIFIED
+const renderTaskTr = (task) => {
+  const taskTr = document.createElement('tr')
+  taskTr.class = "inbox-small-cells"
+  taskTr.id = `task-row${task.id}`
+  taskTr.innerHTML = `
+      <td class="inbox-small-cells">
+        <input type="checkbox" class="mail-checkbox">
+      </td>
+      <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
+      <td class="view-message ">${task.description}</td>
+      <td class="view-message  inbox-small-cells"><i class="fa fa-calendar"></i></td>
+      <td class="view-message  text-right">${task.due_date}</td>
+    </tr>
+  `
+
+  const itemList = document.querySelector("#item-list")
+  itemList.append(taskTr)
 }
 
 const renderTasks = (tasks) => {
-  tasks.forEach(renderTaskLi)
+  tasks.forEach(renderTaskTr)
 }
 
 const init = () => {
