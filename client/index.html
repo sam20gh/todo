@@ -79,7 +79,7 @@
                         <textarea rows="10" cols="30" class="form-control" id="" name=""></textarea>
                       </div>
                     </div>
-  
+
                     <div class="form-group">
                       <div class="col-lg-offset-2 col-lg-10">
                         <span class="btn green fileinput-button">
@@ -99,7 +99,7 @@
         <ul class="inbox-nav inbox-divider">
           <li class="active">
             <a href="#"><i class="fa fa-inbox"></i> Inbox </a>
-  
+
           </li>
           <li>
             <a href="#"><i class="fa fa-calendar"></i> Today</a>
@@ -115,7 +115,9 @@
             <a href="#"><i class=" fa fa-trash-o"></i> Trash</a>
           </li>
         </ul>
-        <ul class="nav nav-pills nav-stacked labels-info inbox-divider">
+
+        <ul class="nav nav-pills nav-stacked labels-info inbox-divider" id="project-list">
+
           <li>
             <h4>Projects</h4>
           </li>
@@ -128,7 +130,7 @@
           </li>
           <li> <a href="#"> <i class=" fa fa-circle text-success"></i>1</a> </li>
         </ul>
-  
+
         <div class="inbox-body text-center">
           <div class="btn-group">
             <a class="btn mini btn-primary" href="javascript:;">
@@ -146,7 +148,7 @@
             </a>
           </div>
         </div>
-  
+
       </aside>
       <aside class="lg-side">
         <div class="inbox-head">
@@ -174,7 +176,7 @@
                 </ul>
               </div>
             </div>
-  
+
             <div class="btn-group">
               <a data-original-title="Refresh" data-placement="top" data-toggle="dropdown" href="#"
                 class="btn mini tooltips">
@@ -205,7 +207,7 @@
                 <li><a href="#"><i class="fa fa-trash-o"></i> Delete</a></li>
               </ul>
             </div>
-  
+
             <ul class="unstyled inbox-pagination">
               <li><span>1-50 of 234</span></li>
               <li>
@@ -217,7 +219,9 @@
             </ul>
           </div>
           <table class="table table-inbox table-hover">
-            <tbody>
+
+            <tbody id ="item-list">
+
               <tr class="unread">
                 <td class="inbox-small-cells">
                   <input type="checkbox" class="mail-checkbox">
