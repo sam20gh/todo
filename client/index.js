@@ -7,18 +7,29 @@ const state = {
   selectedTask: null,
 }
 
-//LOGIC FOR STATE
-const addTaskToArray = (task) => state.allTasks.push(task)
-const addTasksToArray = (tasks) => tasks.forEach(addTaskToArray)
-const allTasksForState = (projects) => {
-  projects.forEach((p) => addTasksToArray(p["tasks"]))
-}
-
 // LOGIN STUFF
 let allUsers
 const getAllUsers = (users) => allUsers = users //want to get an array of user objects
 const findUser = (users, username) => {
   state.user = allUsers.find(x => x.username === username)
+}
+
+//LOGIC FOR STATE
+const allProjectsForState = () => state.allProjects = state.user.projects
+const addTaskToArray = (task) => state.allTasks.push(task)
+const addTasksToArray = (tasks) => tasks.forEach(addTaskToArray)
+const allTasksForState = () => {
+  state.allProjects.forEach((p) => addTasksToArray(p["tasks"]))
+}
+
+const addStuffToState = () => {
+  allProjectsForState()
+  allTasksForState()
+}
+
+const renderStuffFromState = () => {
+  renderProjects(state.allProjects)
+  renderTasks(state.allTasks)
 }
 
 //FAKE ELEMENTS
@@ -53,9 +64,8 @@ const renderProjects = (projects) => {
   projects.forEach(renderProjectLi)
 }
 
-let jsDate
 const dateTimeParser = (datestr) => {
-  jsDate = new Date(datestr)
+  const jsDate = new Date(datestr)
   dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'};
   return jsDate.toLocaleDateString("en-US", dateOptions)
 }
@@ -85,11 +95,13 @@ const renderTasks = (tasks) => {
 }
 
 const init = () => {
-  // getData()
-  // .then(users => findUser(users, "sam"))
-  // renderTasks(user["projects"][1]["tasks"])
-  renderProjects(USERS[1]["projects"])
-  renderTasks(USERS[1]["projects"][0]["tasks"])
+  getData()
+  .then(users => findUser(users, "jx"))
+  .then(addStuffToState)
+  .then(renderStuffFromState)
+  // renderTasks(state.allTasks)
+  // renderProjects(USERS[1]["projects"])
+  // renderTasks(USERS[1]["projects"][0]["tasks"])
 }
 
 init()
