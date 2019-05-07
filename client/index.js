@@ -41,7 +41,7 @@ const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
   projectLi.id = `project-list${project.id}`
   projectLi.innerHTML = `
-    <a href="#">${project.name}</a>
+    <a href="#"> <i class=" fa fa-sign-blank text-danger"></i>${project.name}</a>
   `
 
   const projectList = document.querySelector('#project-list')
@@ -80,7 +80,7 @@ const init = () => {
   // .then(getAllUsers)
   // allUsers.find()
   renderProjects(USERS[1]["projects"])
-  renderTasks(USERS[1]["projects"][0]["tasks"])
+  renderTasks(USERS[1]["projects"][1]["tasks"])
 }
 
 init()
