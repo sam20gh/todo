@@ -41,7 +41,9 @@ const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
   projectLi.id = `project-list${project.id}`
   projectLi.innerText = `${project.name}`
-  document.body.append(projectLi) // TO UPDATE ONCE CONTAINER IDENTIFIED
+
+  const projectList = document.querySelector('#project-list')
+  projectList.append(projectLi)
 }
 
 const renderProjects = (projects) => {
@@ -60,9 +62,9 @@ const renderTasks = (tasks) => {
 }
 
 const init = () => {
-  getData()
-  .then(getAllUsers)
-  allUsers.find()
+  // getData()
+  // .then(getAllUsers)
+  // allUsers.find()
   renderProjects(USERS[1]["projects"])
   renderTasks(USERS[1]["projects"][0]["tasks"])
 }
