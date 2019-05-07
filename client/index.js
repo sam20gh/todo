@@ -1,5 +1,5 @@
 const state = {
-  user: USERS[0],
+  user: null,
   allProjects: [],
   allTasks: [],
   selectedProject: null,
@@ -14,11 +14,12 @@ const allTasksForState = (projects) => {
   projects.forEach((p) => addTasksToArray(p["tasks"]))
 }
 
-
 // LOGIN STUFF
 let allUsers
 const getAllUsers = (users) => allUsers = users //want to get an array of user objects
-const findUser = (username) => allUsers.find(x => x.username === username )
+const findUser = (users, username) => {
+  state.user = allUsers.find(x => x.username === username)
+}
 
 //FAKE ELEMENTS
 
@@ -52,6 +53,13 @@ const renderProjects = (projects) => {
   projects.forEach(renderProjectLi)
 }
 
+let jsDate
+const dateTimeParser = (datestr) => {
+  jsDate = new Date(datestr)
+}
+jsDate.toLocaleDateString("en-US", dateOptions)
+dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'};
+
 const renderTaskTr = (task) => {
   const taskTr = document.createElement('tr')
   taskTr.class = "inbox-small-cells"
@@ -77,10 +85,8 @@ const renderTasks = (tasks) => {
 
 const init = () => {
   // getData()
-  // .then(getAllUsers)
-  // allUsers.find()
-  renderProjects(USERS[1]["projects"])
-  renderTasks(USERS[1]["projects"][1]["tasks"])
+  // .then(users => findUser(users, "sam"))
+  // renderTasks(user["projects"][1]["tasks"])
 }
 
 init()
