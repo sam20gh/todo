@@ -56,22 +56,23 @@ const renderProjects = (projects) => {
 let jsDate
 const dateTimeParser = (datestr) => {
   jsDate = new Date(datestr)
+  dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'};
+  return jsDate.toLocaleDateString("en-US", dateOptions)
 }
-jsDate.toLocaleDateString("en-US", dateOptions)
-dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'};
 
 const renderTaskTr = (task) => {
   const taskTr = document.createElement('tr')
   taskTr.class = "inbox-small-cells"
   taskTr.id = `task-row${task.id}`
+  let parsedDate = dateTimeParser(task.due_date)
   taskTr.innerHTML = `
       <td class="inbox-small-cells">
         <input type="checkbox" class="mail-checkbox">
       </td>
       <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
       <td class="view-message ">${task.description}</td>
-      <td class="view-message  inbox-small-cells"><i class="fa fa-calendar"></i></td>
-      <td class="view-message  text-right">${task.due_date}</td>
+      <td class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></td>
+      <td class="view-message text-right">${parsedDate}</td>
     </tr>
   `
 
@@ -87,6 +88,8 @@ const init = () => {
   // getData()
   // .then(users => findUser(users, "sam"))
   // renderTasks(user["projects"][1]["tasks"])
+  renderProjects(USERS[1]["projects"])
+  renderTasks(USERS[1]["projects"][0]["tasks"])
 }
 
 init()
