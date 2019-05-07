@@ -1,51 +1,51 @@
 const state = {
   user: null,
   allProjects: [],
-  allTasks: [],
-  selectedProject: null,
+  allTasks: [], //flattened array
+  allOutstandingTasks: [],
+  favouriteProjects: [],
+  archivedProjects: [],
+  selectedProject: "Inbox",
   tasksInProject: [],
   selectedTask: null,
 }
 
-// LOGIN STUFF
-let allUsers
-const getAllUsers = (users) => allUsers = users //want to get an array of user objects
-const findUser = (users, username) => {
-  state.user = allUsers.find(x => x.username === username)
-}
-
 //LOGIC FOR STATE
 const allProjectsForState = () => state.allProjects = state.user.projects
-const addTaskToArray = (task) => state.allTasks.push(task)
-const addTasksToArray = (tasks) => tasks.forEach(addTaskToArray)
+const allFavouriteProjects = () => {
+  state.favouriteProjects = state.allProjects.filter(p => p.favourite_status === true)
+}
+const allArchivedProjects = () => {
+  state.archivedProjects = state.allProjects.filter(p => p.archive_status === true)
+}
+const addTaskToArray = (array, task) => array.push(task)
+const addTasksToArray = (array, tasks) => tasks.forEach(t => addTaskToArray(array,t))
 const allTasksForState = () => {
-  state.allProjects.forEach((p) => addTasksToArray(p["tasks"]))
+  state.allProjects.forEach(p => addTasksToArray(state.allTasks, p["tasks"]))
+}
+const findAllOutstandingTasks = () => {
+  state.allOutstandingTasks = state.allTasks.filter(t => t.status == false)
+}
+const findOutstandingTasksInProject = (project_name) => {
+  let allTasksInThisProject = state.allProjects.find(p => p.name == project_name).tasks
+  let result = allTasksInThisProject.filter(t => state.allOutstandingTasks.includes(t))
+  return result
+}
+const inboxTasksForState = () => {
+  state.tasksInProject = findOutstandingTasksInProject("Inbox")
 }
 
 const addStuffToState = () => {
   allProjectsForState()
   allTasksForState()
+  findAllOutstandingTasks()
+  allFavouriteProjects()
+  allArchivedProjects()
+  inboxTasksForState()
 }
-
 const renderStuffFromState = () => {
   renderProjects(state.allProjects)
-  renderTasks(state.allTasks)
-}
-
-//FAKE ELEMENTS
-
-const createInboxLiEl = () => {
-  const inboxLiEl = document.createElement('li')
-  inboxLiEl.innerText = `(12) Inbox List Element (no of tasks: ${USERS[1]["projects"][0]["tasks"].length})`
-  document.body.append(inboxLiEl)
-}
-
-const loginUser = (username) => {
-  state.user = username
-}
-
-const createFakeElements = () => {
-  createInboxLiEl()
+  renderTasks(state.tasksInProject)
 }
 
 //THINGS TO RENDER FROM DATABASE
@@ -53,9 +53,8 @@ const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
   projectLi.id = `project-list${project.id}`
   projectLi.innerHTML = `
-    <a href="#"> <i class=" fa fa-sign-blank text-danger"></i>${project.name}</a>
+    <a href="#"> <i class=" fa fa-sign-blank text-danger"></i>${project.name} (${findOutstandingTasksInProject(project.name).length})</a>
   `
-
   const projectList = document.querySelector('#project-list')
   projectList.append(projectLi)
 }
@@ -96,12 +95,8 @@ const renderTasks = (tasks) => {
 
 const init = () => {
   getData()
-  .then(users => findUser(users, "jx"))
   .then(addStuffToState)
   .then(renderStuffFromState)
-  // renderTasks(state.allTasks)
-  // renderProjects(USERS[1]["projects"])
-  // renderTasks(USERS[1]["projects"][0]["tasks"])
 }
 
 init()
