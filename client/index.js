@@ -70,7 +70,7 @@ const addNewTaskForm = task => {
       due_date: state.newTask.date,
       status: false,
       priority: 1,
-      project_id: 1
+      project_id: 3
     }
     createTask(task)
     newTaskTr.innerHTML =''

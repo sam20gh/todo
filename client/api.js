@@ -9,4 +9,4 @@ const initUser = (users, username) => {
 const getData = () =>
   fetch(API)
   .then(resp=> resp.json())
-  .then(users => initUser(users, "sam"))
+  .then(users => initUser(users, "jx"))
