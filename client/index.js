@@ -1,3 +1,5 @@
+const baseUrl = "http://localhost:3000/tasks"
+
 //Elements to add listeners to
 const loginForm = document.querySelector('#login-form')
 const newTaskButtonLeft = document.querySelector("#new-task-left")
@@ -14,6 +16,7 @@ const state = {
   selectedProject: 4,
   tasksInProject: [],
   selectedTask: null,
+  newTask: []
 }
 
 //new Task event listener
@@ -27,32 +30,47 @@ const addNewTaskListener = () => {
 
 
 
-const addNewTaskForm = (task) => {
-  const newTaskTr = document.createElement('tr')
-  newTaskTr.class = "inbox-small-cells"
+const addNewTaskForm = task => {
+  const newTaskTr = document.createElement('form')
+  newTaskTr.id = "task-form"
   newTaskTr.innerHTML = `
-      <td class="inbox-small-cells">
-        <input type="checkbox" class="mail-checkbox">
-      </td>
-      <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-      <td class="view-message "><input type='text' class="form-control" placeholder="Task Description" /></td>
-      <td class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></td>
-      <td class="view-message inbox-small-cells"><input type='text' class="form-control" placeholder="due date" /></td>
+      <div class="inbox-small-cells"><i class="fa fa-star"></i></div>
+      <div class="view-message" ><input type='text' class="form-control" placeholder="Task Description" name="description" /></div>
+      <div class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></div>
+      <div class="view-message inbox-small-cells" ><input type='text' class="form-control" placeholder="due date"  name="date"/></div>
     </tr>
   `
 
     newTaskTr.addEventListener("keyup", event => {
       event.preventDefault()
+      
       if (event.keyCode === 13)
       addNewTask()
     })
  
 
   const addNewTask = () => {
+    const formEl = document.querySelector("#task-form")
+    state.newTask.name = formEl.description.value
+    state.newTask.date = formEl.date.value
+    formEl.reset()
+    // state.newTask.name = formEl.description.value
+    // state.newTask.date = formEl.date.value
+
+
+    const task = {
+      description: state.newTask.name,
+      due_date: state.newTask.date,
+      status: false,
+      priority: 1,
+      project_id: 1
+    }
+    createTask(task)
+    newTaskTr.innerHTML =''
     alert("task added")
   }
 
-  const itemList = document.querySelector("#item-list")
+  const itemList = document.querySelector(".new-task")
   itemList.prepend(newTaskTr)
 
 
@@ -150,6 +168,7 @@ const renderTaskTr = (task) => {
       </td>
       <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
       <td class="view-message ">${task.description}</td>
+      <td class="view-message inbox-small-cells"><i>${task.priority}</i></td>
       <td class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></td>
       <td class="view-message text-right">${parsedDate}</td>
     </tr>
@@ -157,6 +176,15 @@ const renderTaskTr = (task) => {
 
   const itemList = document.querySelector("#item-list")
   itemList.append(taskTr)
+}
+
+//vcreate new task 
+const createTask = task => {
+  fetch(baseUrl, {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(task)
+  }).then(resp => resp.json())
 }
 // date/time Picker
 const timepicker = () => {

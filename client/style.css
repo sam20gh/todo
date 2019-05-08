@@ -5,6 +5,10 @@
     table-layout: fixed;
     width: 100%;
 }
+.new-task {
+    width: 100%;
+    display: inline-block;
+}
 .mail-box aside {
     display: table-cell;
     float: none;

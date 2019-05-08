@@ -16,4 +16,17 @@ class TasksController < ApplicationController
         render json: {error: 'No task found'}, status: 404
     end
   end
+   def create
+    byebug
+    task = Task.create( task_params)
+    if task
+        render json: task
+    else
+        render json: {error: 'No task found'}, status: 404
+    end
+  end
+  private
+  def task_params
+    params.require(:task).permit(:description, :due_date, :status, :priority, :project_id)
+  end
 end
