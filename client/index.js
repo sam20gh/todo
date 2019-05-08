@@ -7,7 +7,7 @@ const state = {
   allProjects: [],
   allTasks: [], //flattened array
   allOutstandingTasks: [],
-  project_ostasks: [{project: "", tasks: }],
+  project_ostasks: [],
   priority_ostasks: [{priority: 1, tasks: null}, {priority: 2, tasks: null}, {priority: 3, tasks: null}, {priority: 4, tasks: null}],
   favouriteProjects: [],
   archivedProjects: [],
@@ -46,7 +46,7 @@ const findOutstandingTasksInProject = (project_id) => {
   return result
 }
 const findPriorityTasksPair = (priority_level) => {
-  object = state.priority_tasks.find(o => o.priority == priority_level)
+  object = state.priority_ostasks.find(o => o.priority == priority_level)
   object.tasks = state.allOutstandingTasks.filter(t => t.priority == priority_level)
 }
 const findPriorityTasksPairs = () => {
