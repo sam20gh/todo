@@ -37,7 +37,7 @@ const findOrCreateUser = (username) => {
     makePage()
   }
   else {
-    alert("Please sign in")
+    alert("Please sign up")
   }
 }
 
