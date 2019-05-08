@@ -51,35 +51,8 @@ const addNewTaskForm = task => {
      event.preventDefault()
      if (event.keyCode === 13)
       addNewTask()
-// <<<<<<< HEAD
-//     })
-
-
-//   const addNewTask = () => {
-//     const formEl = document.querySelector("#task-form")
-//     state.newTask.name = formEl.description.value
-//     state.newTask.date = formEl.date.value
-//     formEl.reset()
-//     // state.newTask.name = formEl.description.value
-//     // state.newTask.date = formEl.date.value
-
-
-//     const task = {
-//       description: state.newTask.name,
-//       due_date: state.newTask.date,
-//       status: false,
-//       priority: 1,
-//       project_id: 3
-//     }
-//     createTask(task)
-//     newTaskTr.innerHTML =''
-//     alert("task added")
-//   }
-
-//   const itemList = document.querySelector(".new-task")
-//   itemList.prepend(newTaskTr)
-// =======
    })
+
 
 const addNewTask = () => {
   const formEl = document.querySelector("#task-form")
@@ -99,7 +72,6 @@ const addNewTask = () => {
    newTaskTr.innerHTML = ``
    alert("task added")
  }
->>>>>>> da9f8af78d2341fd80a5d20a7c6ab1c32cd1feae
 
  const itemList = document.querySelector(".new-task")
  itemList.prepend(newTaskTr)
