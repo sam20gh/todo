@@ -7,8 +7,8 @@ const state = {
   allProjects: [],
   allTasks: [], //flattened array
   allOutstandingTasks: [],
-  projects_taskssize: [],
-  priority_taskssize: [{1: null}, {2: null}, {3: null}, {4: null}],
+  project_ostasks: [{project: "", tasks: }],
+  priority_ostasks: [{priority: 1, tasks: null}, {priority: 2, tasks: null}, {priority: 3, tasks: null}, {priority: 4, tasks: null}],
   favouriteProjects: [],
   archivedProjects: [],
   selectedProject: 4,
@@ -45,9 +45,15 @@ const findOutstandingTasksInProject = (project_id) => {
   let result = allTasksInThisProject.filter(t => state.allOutstandingTasks.includes(t))
   return result
 }
-const findOutstandingTasksPriority = (priority_level) => {
-  result = state.allOutstandingTasks.filter(t => t.priority == priority_level)
-  state.priority_taskssize[state.priority_taskssize.find(level => level == priority_level)] = result
+const findPriorityTasksPair = (priority_level) => {
+  object = state.priority_tasks.find(o => o.priority == priority_level)
+  object.tasks = state.allOutstandingTasks.filter(t => t.priority == priority_level)
+}
+const findPriorityTasksPairs = () => {
+  findPriorityTasksPair(1)
+  findPriorityTasksPair(2)
+  findPriorityTasksPair(3)
+  findPriorityTasksPair(4)
 }
 const inboxTasksForState = () => {
   state.selectedProject = state.allProjects.find(p => p.name == "Inbox")
@@ -61,10 +67,7 @@ const addStuffToState = () => {
   allFavouriteProjects()
   allArchivedProjects()
   inboxTasksForState()
-  // findAllOutstandingTasks(1)
-  // findAllOutstandingTasks(2)
-  // findAllOutstandingTasks(3)
-  // findAllOutstandingTasks(4)
+  findPriorityTasksPairs()
 }
 const renderStuffFromState = () => {
   renderProjects(state.allProjects)
