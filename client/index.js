@@ -1,13 +1,27 @@
+//Elements to add listeners to
+const loginForm = document.querySelector('#login-form')
+const newTaskButtonLeft = document.querySelector("#new-task-left")
+
 const state = {
   user: null,
   allProjects: [],
   allTasks: [], //flattened array
   allOutstandingTasks: [],
+  projects_taskssize: [],
+  priority_taskssize: [{1: null}, {2: null}, {3: null}, {4: null}],
   favouriteProjects: [],
   archivedProjects: [],
-  selectedProject: "Inbox",
+  selectedProject: 4,
   tasksInProject: [],
   selectedTask: null,
+}
+
+// LOGIN event listener
+const addListenerLogin = () => {
+  loginForm.addEventListener('submit', event => {
+    event.preventDefault()
+    alert(`Maybe you're logged in, ${loginForm.username.value}`)
+  })
 }
 
 //LOGIC FOR STATE
@@ -26,13 +40,18 @@ const allTasksForState = () => {
 const findAllOutstandingTasks = () => {
   state.allOutstandingTasks = state.allTasks.filter(t => t.status == false)
 }
-const findOutstandingTasksInProject = (project_name) => {
-  let allTasksInThisProject = state.allProjects.find(p => p.name == project_name).tasks
+const findOutstandingTasksInProject = (project_id) => {
+  let allTasksInThisProject = state.allProjects.find(p => p.id == project_id).tasks
   let result = allTasksInThisProject.filter(t => state.allOutstandingTasks.includes(t))
   return result
 }
+const findOutstandingTasksPriority = (priority_level) => {
+  result = state.allOutstandingTasks.filter(t => t.priority == priority_level)
+  state.priority_taskssize[state.priority_taskssize.find(level => level == priority_level)] = result
+}
 const inboxTasksForState = () => {
-  state.tasksInProject = findOutstandingTasksInProject("Inbox")
+  state.selectedProject = state.allProjects.find(p => p.name == "Inbox")
+  state.tasksInProject = findOutstandingTasksInProject(state.selectedProject.id)
 }
 
 const addStuffToState = () => {
@@ -42,10 +61,18 @@ const addStuffToState = () => {
   allFavouriteProjects()
   allArchivedProjects()
   inboxTasksForState()
+  // findAllOutstandingTasks(1)
+  // findAllOutstandingTasks(2)
+  // findAllOutstandingTasks(3)
+  // findAllOutstandingTasks(4)
 }
 const renderStuffFromState = () => {
   renderProjects(state.allProjects)
   renderTasks(state.tasksInProject)
+}
+
+const addListeners = () => {
+  addListenerLogin()
 }
 
 //THINGS TO RENDER FROM DATABASE
@@ -53,7 +80,7 @@ const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
   projectLi.id = `project-list${project.id}`
   projectLi.innerHTML = `
-    <a href="#"> <i class=" fa fa-sign-blank text-danger"></i>${project.name} (${findOutstandingTasksInProject(project.name).length})</a>
+    <a href="#"> <i class=" fa fa-sign-blank text-danger"></i>${project.name} (${findOutstandingTasksInProject(project.id).length})</a>
   `
   const projectList = document.querySelector('#project-list')
   projectList.append(projectLi)
@@ -97,6 +124,7 @@ const init = () => {
   getData()
   .then(addStuffToState)
   .then(renderStuffFromState)
+  .then(addListeners)
 }
 
 init()
