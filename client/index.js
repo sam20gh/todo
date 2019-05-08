@@ -4,13 +4,15 @@ const baseUrl = "http://localhost:3000/tasks"
 //Elements to render stuff to
 const projectList = document.querySelector('#project-list')
 const itemList = document.querySelector("#item-list")
+const viewAll = document.querySelector("#view-all")
+const noDueDate = document.querySelector("#no-due-date")
 
 
 //Elements to add listeners to
 const loginForm = document.querySelector('#login-form')
 const newTaskButtonLeft = document.querySelector("#new-task-left")
 
-const state = {
+let state = {
   users: null,
   user: null,
   allProjects: [],
@@ -35,53 +37,74 @@ const addNewTaskListener = () => {
 
 }
 
-
-
 const addNewTaskForm = task => {
   const newTaskTr = document.createElement('form')
   newTaskTr.id = "task-form"
   newTaskTr.innerHTML = `
-      <div class="inbox-small-cells"><i class="fa fa-star"></i></div>
-      <div class="view-message" ><input type='text' class="form-control" placeholder="Task Description" name="description" /></div>
-      <div class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></div>
-      <div class="view-message inbox-small-cells" ><input type='text' class="form-control" placeholder="due date"  name="date"/></div>
-    </tr>
-  `
-
-    newTaskTr.addEventListener("keyup", event => {
-      event.preventDefault()
-      
-      if (event.keyCode === 13)
+     <div class=inbox-small-cells><i class="fa fa-star"></i></div>
+     <div class=view-message ><input type='text' class="form-control" placeholder="Task Description" name="description"></div>
+     <div class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></div>
+     <div class="view-message inbox-small-cells"><input type="text" class="form-control" placeholder="due date" name="date"></div>
+   </tr>
+   `
+   newTaskTr.addEventListener("keyup", event => {
+     event.preventDefault()
+     if (event.keyCode === 13)
       addNewTask()
-    })
+// <<<<<<< HEAD
+//     })
 
 
-  const addNewTask = () => {
-    const formEl = document.querySelector("#task-form")
-    state.newTask.name = formEl.description.value
-    state.newTask.date = formEl.date.value
-    formEl.reset()
-    // state.newTask.name = formEl.description.value
-    // state.newTask.date = formEl.date.value
+//   const addNewTask = () => {
+//     const formEl = document.querySelector("#task-form")
+//     state.newTask.name = formEl.description.value
+//     state.newTask.date = formEl.date.value
+//     formEl.reset()
+//     // state.newTask.name = formEl.description.value
+//     // state.newTask.date = formEl.date.value
 
 
-    const task = {
-      description: state.newTask.name,
-      due_date: state.newTask.date,
-      status: false,
-      priority: 1,
-      project_id: 3
-    }
-    createTask(task)
-    newTaskTr.innerHTML =''
-    alert("task added")
-  }
+//     const task = {
+//       description: state.newTask.name,
+//       due_date: state.newTask.date,
+//       status: false,
+//       priority: 1,
+//       project_id: 3
+//     }
+//     createTask(task)
+//     newTaskTr.innerHTML =''
+//     alert("task added")
+//   }
 
-  const itemList = document.querySelector(".new-task")
-  itemList.prepend(newTaskTr)
+//   const itemList = document.querySelector(".new-task")
+//   itemList.prepend(newTaskTr)
+// =======
+   })
 
+const addNewTask = () => {
+  const formEl = document.querySelector("#task-form")
+  state.newTask.name = formEl.description.value
+  state.newTask.date = formEl.date.value
+  formEl.reset()
 
+  let task = {
+     description: state.newTask.name,
+     due_date: state.newTask.date,
+     status: false,
+     priority: 1,
+     project_id: 3
+   }
+
+   createTask(task)
+   newTaskTr.innerHTML = ``
+   alert("task added")
  }
+>>>>>>> da9f8af78d2341fd80a5d20a7c6ab1c32cd1feae
+
+ const itemList = document.querySelector(".new-task")
+ itemList.prepend(newTaskTr)
+}
+
 // LOGIN event listener
 const addListenerLogin = () => {
   loginForm.addEventListener('submit', event => {
@@ -94,12 +117,45 @@ const addListenerLogin = () => {
 const findOrCreateUser = (username) => {
   user = state.users.find(x => x.username === username)
   if (user) {
+    allUsers = state.users
+    state = {
+      users: null,
+      user: null,
+      allProjects: [],
+      allTasks: [], //flattened array
+      allOutstandingTasks: [],
+      project_ostasks: [],
+      priority_ostasks: [{priority: 1, tasks: null}, {priority: 2, tasks: null}, {priority: 3, tasks: null}, {priority: 4, tasks: null}],
+      favouriteProjects: [],
+      archivedProjects: [],
+      selectedProject: 4,
+      tasksInProject: [],
+      selectedTask: null
+    }
     state.user = user
+    state.users = allUsers
     makePage()
   }
   else {
     alert("Please sign up")
   }
+}
+
+const addListenerAllPriorities = () => {
+  for (let i = 1; i < state.priority_ostasks.length+1; i++) {
+    document.querySelector(`#priority-${i}`).addEventListener('click', () => {
+      if (state.priority_ostasks.find(o => o.priority == i).tasks.length > 0) {
+        renderTasks(state.priority_ostasks.find(o => o.priority == i).tasks)
+      } else {
+        renderTaskTr()
+      }})
+    }
+}
+
+const addListenerToFilterTabItems = () => {
+  addListenerAllPriorities()
+  viewAll.addEventListener('click', () => renderTasks(state.allOutstandingTasks))
+  noDueDate.addEventListener('click', () => alert("no due date clicked to update"))
 }
 
 //LOGIC FOR STATE
@@ -137,6 +193,13 @@ const inboxTasksForState = () => {
   state.selectedProject = state.allProjects.find(p => p.name.toLowerCase() == "inbox")
   state.tasksInProject = findOutstandingTasksInProject(state.selectedProject.id)
 }
+const renderUserData = () => {
+  const userProfile = document.querySelector("#user-profile")
+  userProfile.innerHTML = `
+    <h5>${state.user.username}</h5>
+    <span>${state.user.email}</span>
+  `
+}
 
 const addStuffToState = () => {
   allProjectsForState()
@@ -147,36 +210,25 @@ const addStuffToState = () => {
   inboxTasksForState()
   findPriorityTasksPairs()
 }
-const renderStuffFromState = () => {
-  renderProjects(state.allProjects)
-  renderTasks(state.tasksInProject)
+
+//LOGIC FOR OTHER RENDERS
+
+// CRUD for tasks
+// date/time Picker
+const timepicker = () => {
 }
 
-const addBasicListeners = () => {
-  addListenerLogin()
-  addNewTaskListener()
-
-}
-
-const makePage = () => {
-  clearPreviousData()
-  addStuffToState()
-  renderStuffFromState()
-}
-
-const clearPreviousData = () => {
-  projectList.innerHTML = ``
-  itemList.innerHTML = ``
-}
-
-//THINGS TO RENDER FROM DATABASE
+//THINGS TO RENDER FROM DATABASE OR STATE
 
 const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
-  projectLi.id = `project-list${project.id}`
+  projectLi.id = `project-count-${project.id}`
   projectLi.innerHTML = `
-    <a href="#"> <i class=" fa fa-sign-blank text-danger"></i>${project.name} <span class="label label-info pull-right">${findOutstandingTasksInProject(project.id).length}</span></a>
+    <a href="#"> <i class="fa fa-circle text-danger"></i>${project.name} <span class="label label-info pull-right">${findOutstandingTasksInProject(project.id).length}</span></a>
   `
+  projectLi.addEventListener('click', () => {
+    renderTasks(findOutstandingTasksInProject(project.id))
+  })
   projectList.append(projectLi)
 }
 
@@ -192,25 +244,39 @@ const dateTimeParser = (datestr) => {
 }
 
 const renderTaskTr = (task) => {
-  const taskTr = document.createElement('tr')
-  // taskTr.class = "inbox-small-cells"
-  taskTr.id = `task-row${task.id}`
-  let parsedDate = dateTimeParser(task.due_date)
-  taskTr.innerHTML = `
-      <td class="inbox-small-cells">
-        <input type="checkbox" class="mail-checkbox">
-      </td>
-      <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-      <td class="view-message ">${task.description}</td>
-      <td class="view-message inbox-small-cells"><i>${task.priority}</i></td>
-      <td class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></td>
-      <td class="view-message text-right">${parsedDate}</td>
+  if (task) {
+    const taskTr = document.createElement('tr')
+    // taskTr.class = "inbox-small-cells"
+    taskTr.id = `task-row${task.id}`
+    let parsedDate = dateTimeParser(task.due_date)
+    taskTr.innerHTML = `
+        <td class="inbox-small-cells">
+          <input type="checkbox" class="mail-checkbox">
+        </td>
+        <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
+        <td class="view-message ">${task.description}</td>
+        <td class="view-message inbox-small-cells"><i>${task.priority}</i></td>
+        <td class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></td>
+        <td class="view-message text-right">${parsedDate}</td>
+      </tr>
+    `
+    itemList.append(taskTr)
+  } else {
+    itemList.innerHTML = ``
+    const taskTr = document.createElement('tr')
+    taskTr.innerHTML = `
+      <td class="view-message text-center"> </td>
+      <td class="view-message text-center"> </td>
+      <td class="view-message text-center">No task in this filter at the moment!</td>
+      <td class="view-message text-center"></td>
+      <td class="view-message text-center"></td>
     </tr>
-  `
-  itemList.append(taskTr)
+    `
+    itemList.append(taskTr)
+  }
 }
 
-//vcreate new task 
+//vcreate new task
 const createTask = task => {
   fetch(baseUrl, {
     method: "POST",
@@ -218,14 +284,38 @@ const createTask = task => {
     body: JSON.stringify(task)
   }).then(resp => resp.json())
 }
-// date/time Picker
-const timepicker = () => {
 
-}
 const renderTasks = (tasks) => {
+  if (tasks) {
+  itemList.innerHTML=``
   tasks.forEach(renderTaskTr)
+} else if (tasks==="nothing"){
+    const taskTr = document.createElement('tr')
+    taskTr.innerText = "Nothing here"
+    itemList.append(taskTr)
+}
 }
 
+const clearPreviousData = () => {
+  projectList.innerHTML = ``
+  itemList.innerHTML = ``
+}
+const renderStuffFromState = () => {
+  renderUserData()
+  renderProjects(state.allProjects)
+  renderTasks(state.tasksInProject)
+}
+const makePage = () => {
+  clearPreviousData()
+  addStuffToState()
+  renderStuffFromState()
+}
+const addBasicListeners = () => {
+  addListenerLogin()
+  addNewTaskListener()
+  addListenerToFilterTabItems()
+
+}
 const init = () => {
   getData()
   .then(makePage)
