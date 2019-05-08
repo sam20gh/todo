@@ -16,9 +16,9 @@
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="login_bar">
-        <form name="login" method="post" class="form-inline">
-          <input class="form-control mr-sm-2" type="text" placeholder="username" aria-label="username">
-          <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Login</button>
+        <form id="login-form" name="login" method="post" class="form-inline">
+          <input class="form-control mr-sm-2" type="text" placeholder="username" aria-label="username" name="username">
+          <button class="btn btn-outline-light my-2 my-sm-0" type="submit" name="submit">Login</button>
         </form>
       </div>
     </div>
@@ -41,7 +41,7 @@
           </a>
         </div>
         <div class="inbox-body">
-          <a href="#myModal" data-toggle="modal" title="Compose" class="btn btn-compose">
+          <a href="#myModal" data-toggle="modal" title="Compose" class="btn btn-compose" id="new-task-left">
             New Task
           </a>
           <!-- Modal -->
@@ -237,10 +237,11 @@
       </aside>
     </div>
   </div>
-  <script type="text/javascript" src="users-data.js"></script>
+  <script type="text/javascript" src="api.js"></script>
+  <!-- <script type="text/javascript" src="users-data.js"></script> -->
   <script type="text/javascript" src="index.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-  <!-- <script type="text/javascript" src="api.js"></script> -->
+
   </body>
 </html>
