@@ -24,7 +24,8 @@ let state = {
   archivedProjects: [],
   selectedProject: 4,
   tasksInProject: [],
-  selectedTask: null
+  selectedTask: null,
+  newTask: []
 }
 
 //new Task event listener
@@ -36,51 +37,45 @@ const addNewTaskListener = () => {
 
 }
 
-const addNewTaskForm = (task) => {
-  const newTaskTr = document.createElement('tr')
-  newTaskTr.class = "inbox-small-cells"
+const addNewTaskForm = task => {
+  const newTaskTr = document.createElement('form')
+  newTaskTr.id = "task-form"
   newTaskTr.innerHTML = `
-      <div class="inbox-small-cells"><i class="fa fa-star"></i></div>
-      <div class="view-message" ><input type='text' class="form-control" placeholder="Task Description" name="description" /></div>
-      <div class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></div>
-      <div class="view-message inbox-small-cells" ><input type='text' class="form-control" placeholder="due date"  name="date"/></div>
-    </tr>
-  `
-
-    newTaskTr.addEventListener("keyup", event => {
-      event.preventDefault()
-
-      if (event.keyCode === 13)
+     <div class=inbox-small-cells><i class="fa fa-star"></i></div>
+     <div class=view-message ><input type='text' class="form-control" placeholder="Task Description" name="description"></div>
+     <div class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></div>
+     <div class="view-message inbox-small-cells"><input type="text" class="form-control" placeholder="due date" name="date"></div>
+   </tr>
+   `
+   newTaskTr.addEventListener("keyup", event => {
+     event.preventDefault()
+     if (event.keyCode === 13)
       addNewTask()
-    })
+   })
 
+const addNewTask = () => {
+  const formEl = document.querySelector("#task-form")
+  state.newTask.name = formEl.description.value
+  state.newTask.date = formEl.date.value
+  formEl.reset()
 
-  const addNewTask = () => {
-    const formEl = document.querySelector("#task-form")
-    state.newTask.name = formEl.description.value
-    state.newTask.date = formEl.date.value
-    formEl.reset()
-    // state.newTask.name = formEl.description.value
-    // state.newTask.date = formEl.date.value
+  let task = {
+     description: state.newTask.name,
+     due_date: state.newTask.date,
+     status: false,
+     priority: 1,
+     project_id: 3
+   }
 
-
-    const task = {
-      description: state.newTask.name,
-      due_date: state.newTask.date,
-      status: false,
-      priority: 1,
-      project_id: 1
-    }
-    createTask(task)
-    newTaskTr.innerHTML =''
-    alert("task added")
-  }
-
-  const itemList = document.querySelector(".new-task")
-  itemList.prepend(newTaskTr)
-
-
+   createTask(task)
+   newTaskTr.innerHTML = ``
+   alert("task added")
  }
+
+ const itemList = document.querySelector(".new-task")
+ itemList.prepend(newTaskTr)
+}
+
 // LOGIN event listener
 const addListenerLogin = () => {
   loginForm.addEventListener('submit', event => {
@@ -260,8 +255,6 @@ const createTask = task => {
     body: JSON.stringify(task)
   }).then(resp => resp.json())
 }
-// date/time Picker
-const timepicker = () => {
 
 const renderTasks = (tasks) => {
   if (tasks) {
