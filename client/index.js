@@ -12,7 +12,7 @@ const noDueDate = document.querySelector("#no-due-date")
 const loginForm = document.querySelector('#login-form')
 const newTaskButtonLeft = document.querySelector("#new-task-left")
 
-const state = {
+let state = {
   users: null,
   user: null,
   allProjects: [],
@@ -24,7 +24,7 @@ const state = {
   archivedProjects: [],
   selectedProject: 4,
   tasksInProject: [],
-  selectedTask: null,
+  selectedTask: null
 }
 
 //new Task event listener
@@ -78,7 +78,23 @@ const addListenerLogin = () => {
 const findOrCreateUser = (username) => {
   user = state.users.find(x => x.username === username)
   if (user) {
+    allUsers = state.users
+    state = {
+      users: null,
+      user: null,
+      allProjects: [],
+      allTasks: [], //flattened array
+      allOutstandingTasks: [],
+      project_ostasks: [],
+      priority_ostasks: [{priority: 1, tasks: null}, {priority: 2, tasks: null}, {priority: 3, tasks: null}, {priority: 4, tasks: null}],
+      favouriteProjects: [],
+      archivedProjects: [],
+      selectedProject: 4,
+      tasksInProject: [],
+      selectedTask: null
+    }
     state.user = user
+    state.users = allUsers
     makePage()
   }
   else {
@@ -201,23 +217,16 @@ const renderTaskTr = (task) => {
         <td class="view-message text-right">${parsedDate}</td>
       </tr>
     `
-    itemList.append(taskTr)}
-    else {
-      alert("There are no tasks in here")
-      // const taskTr = document.createElement('tr')
-      // let parsedDate = dateTimeParser(task.due_date)
-      // taskTr.innerHTML = `
-      //   <td class="inbox-small-cells">
-      //     <input type="checkbox" class="mail-checkbox">
-      //   </td>
-      //   <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-      //   <td class="view-message ">NOTHING HERE</td>
-      //   <td class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></td>
-      //   <td class="view-message text-right">NOTHING HERE</td>
-      // </tr>
-      // `
-      // itemList.append(taskTr)
-    }
+    itemList.append(taskTr)
+  } else {
+    itemList.innerHTML = ``
+    const taskTr = document.createElement('tr')
+    taskTr.innerHTML = `
+      <td class="view-message text-center">No task in this filter at the moment!</td>
+    </tr>
+    `
+    itemList.append(taskTr)
+  }
 }
 
 const renderTasks = (tasks) => {
