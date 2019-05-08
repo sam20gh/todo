@@ -1,10 +1,6 @@
 //Elements to render stuff to
 const projectList = document.querySelector('#project-list')
 const itemList = document.querySelector("#item-list")
-const priority1 = document.querySelector("#priority-1")
-const priority2 = document.querySelector("#priority-2")
-const priority3 = document.querySelector("#priority-3")
-const priority4 = document.querySelector("#priority-4")
 const viewAll = document.querySelector("#view-all")
 const noDueDate = document.querySelector("#no-due-date")
 
@@ -116,7 +112,7 @@ const addListenerAllPriorities = () => {
 const addListenerToFilterTabItems = () => {
   addListenerAllPriorities()
   viewAll.addEventListener('click', () => renderTasks(state.allOutstandingTasks))
-  noDueDate.addEventListener('click', () => alert("no due date clicked"))
+  noDueDate.addEventListener('click', () => alert("no due date clicked to update"))
 }
 
 //LOGIC FOR STATE
@@ -183,10 +179,13 @@ const timepicker = () => {
 
 const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
-  projectLi.id = `project-list${project.id}`
+  projectLi.id = `project-count-${project.id}`
   projectLi.innerHTML = `
-    <a href="#"> <i class=" fa fa-sign-blank text-danger"></i>${project.name} <span class="label label-info pull-right">${findOutstandingTasksInProject(project.id).length}</span></a>
+    <a href="#"> <i class="fa fa-circle text-danger"></i>${project.name} <span class="label label-info pull-right">${findOutstandingTasksInProject(project.id).length}</span></a>
   `
+  projectLi.addEventListener('click', () => {
+    renderTasks(findOutstandingTasksInProject(project.id))
+  })
   projectList.append(projectLi)
 }
 
