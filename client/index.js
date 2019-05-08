@@ -1,16 +1,23 @@
+
 const baseUrl = "http://localhost:3000/tasks"
+
+//Elements to render stuff to
+const projectList = document.querySelector('#project-list')
+const itemList = document.querySelector("#item-list")
+
 
 //Elements to add listeners to
 const loginForm = document.querySelector('#login-form')
 const newTaskButtonLeft = document.querySelector("#new-task-left")
 
 const state = {
+  users: null,
   user: null,
   allProjects: [],
   allTasks: [], //flattened array
   allOutstandingTasks: [],
-  projects_taskssize: [],
-  priority_taskssize: [{1: null}, {2: null}, {3: null}, {4: null}],
+  project_ostasks: [],
+  priority_ostasks: [{priority: 1, tasks: null}, {priority: 2, tasks: null}, {priority: 3, tasks: null}, {priority: 4, tasks: null}],
   favouriteProjects: [],
   archivedProjects: [],
   selectedProject: 4,
@@ -47,7 +54,7 @@ const addNewTaskForm = task => {
       if (event.keyCode === 13)
       addNewTask()
     })
- 
+
 
   const addNewTask = () => {
     const formEl = document.querySelector("#task-form")
@@ -79,8 +86,20 @@ const addNewTaskForm = task => {
 const addListenerLogin = () => {
   loginForm.addEventListener('submit', event => {
     event.preventDefault()
-    alert(`Maybe you're logged in, ${loginForm.username.value}`)
+    findOrCreateUser(`${loginForm.username.value}`)
+    loginForm.reset()
   })
+}
+
+const findOrCreateUser = (username) => {
+  user = state.users.find(x => x.username === username)
+  if (user) {
+    state.user = user
+    makePage()
+  }
+  else {
+    alert("Please sign up")
+  }
 }
 
 //LOGIC FOR STATE
@@ -104,12 +123,18 @@ const findOutstandingTasksInProject = (project_id) => {
   let result = allTasksInThisProject.filter(t => state.allOutstandingTasks.includes(t))
   return result
 }
-const findOutstandingTasksPriority = (priority_level) => {
-  result = state.allOutstandingTasks.filter(t => t.priority == priority_level)
-  state.priority_taskssize[state.priority_taskssize.find(level => level == priority_level)] = result
+const findPriorityTasksPair = (priority_level) => {
+  object = state.priority_ostasks.find(o => o.priority == priority_level)
+  object.tasks = state.allOutstandingTasks.filter(t => t.priority == priority_level)
+}
+const findPriorityTasksPairs = () => {
+  findPriorityTasksPair(1)
+  findPriorityTasksPair(2)
+  findPriorityTasksPair(3)
+  findPriorityTasksPair(4)
 }
 const inboxTasksForState = () => {
-  state.selectedProject = state.allProjects.find(p => p.name == "inbox")
+  state.selectedProject = state.allProjects.find(p => p.name.toLowerCase() == "inbox")
   state.tasksInProject = findOutstandingTasksInProject(state.selectedProject.id)
 }
 
@@ -120,34 +145,43 @@ const addStuffToState = () => {
   allFavouriteProjects()
   allArchivedProjects()
   inboxTasksForState()
-  // findAllOutstandingTasks(1)
-  // findAllOutstandingTasks(2)
-  // findAllOutstandingTasks(3)
-  // findAllOutstandingTasks(4)
+  findPriorityTasksPairs()
 }
 const renderStuffFromState = () => {
   renderProjects(state.allProjects)
   renderTasks(state.tasksInProject)
 }
 
-const addListeners = () => {
+const addBasicListeners = () => {
   addListenerLogin()
   addNewTaskListener()
 
 }
 
+const makePage = () => {
+  clearPreviousData()
+  addStuffToState()
+  renderStuffFromState()
+}
+
+const clearPreviousData = () => {
+  projectList.innerHTML = ``
+  itemList.innerHTML = ``
+}
+
 //THINGS TO RENDER FROM DATABASE
+
 const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
   projectLi.id = `project-list${project.id}`
   projectLi.innerHTML = `
     <a href="#"> <i class=" fa fa-sign-blank text-danger"></i>${project.name} <span class="label label-info pull-right">${findOutstandingTasksInProject(project.id).length}</span></a>
   `
-  const projectList = document.querySelector('#project-list')
   projectList.append(projectLi)
 }
 
 const renderProjects = (projects) => {
+  projectList.innerHTML = `<li><h4>Projects</h4></li>`
   projects.forEach(renderProjectLi)
 }
 
@@ -159,7 +193,7 @@ const dateTimeParser = (datestr) => {
 
 const renderTaskTr = (task) => {
   const taskTr = document.createElement('tr')
-  taskTr.class = "inbox-small-cells"
+  // taskTr.class = "inbox-small-cells"
   taskTr.id = `task-row${task.id}`
   let parsedDate = dateTimeParser(task.due_date)
   taskTr.innerHTML = `
@@ -173,8 +207,6 @@ const renderTaskTr = (task) => {
       <td class="view-message text-right">${parsedDate}</td>
     </tr>
   `
-
-  const itemList = document.querySelector("#item-list")
   itemList.append(taskTr)
 }
 
@@ -188,7 +220,7 @@ const createTask = task => {
 }
 // date/time Picker
 const timepicker = () => {
-  
+
 }
 const renderTasks = (tasks) => {
   tasks.forEach(renderTaskTr)
@@ -196,9 +228,8 @@ const renderTasks = (tasks) => {
 
 const init = () => {
   getData()
-  .then(addStuffToState)
-  .then(renderStuffFromState)
-  .then(addListeners)
+  .then(makePage)
+  .then(addBasicListeners)
 }
 
 init()

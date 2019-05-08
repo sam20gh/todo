@@ -1,14 +1,12 @@
 API = "http://localhost:3000/users"
 
 // LOGIN STUFF
-let allUsers
-const getAllUsers = (users) => allUsers = users
-const findUser = (users, username) => {
-  state.user = allUsers.find(x => x.username === username)
+const initUser = (users, username) => {
+  state.users = users
+  state.user = state.users.find(x => x.username === username)
 }
 
 const getData = () =>
   fetch(API)
   .then(resp=> resp.json())
-  .then(getAllUsers)
-  .then(users => findUser(users, "Sam"))
+  .then(users => initUser(users, "sam"))
