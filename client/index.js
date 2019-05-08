@@ -221,7 +221,11 @@ const renderTaskTr = (task) => {
     itemList.innerHTML = ``
     const taskTr = document.createElement('tr')
     taskTr.innerHTML = `
+      <td class="view-message text-center"> </td>
+      <td class="view-message text-center"> </td>
       <td class="view-message text-center">No task in this filter at the moment!</td>
+      <td class="view-message text-center"></td>
+      <td class="view-message text-center"></td>
     </tr>
     `
     itemList.append(taskTr)
