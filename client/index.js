@@ -1,3 +1,7 @@
+//Elements to render stuff to
+const projectList = document.querySelector('#project-list')
+const itemList = document.querySelector("#item-list")
+
 //Elements to add listeners to
 const loginForm = document.querySelector('#login-form')
 const newTaskButtonLeft = document.querySelector("#new-task-left")
@@ -92,23 +96,29 @@ const addBasicListeners = () => {
 }
 
 const makePage = () => {
-  // clearPreviousData()
+  clearPreviousData()
   addStuffToState()
   renderStuffFromState()
 }
 
+const clearPreviousData = () => {
+  projectList.innerHTML = ``
+  itemList.innerHTML = ``
+}
+
 //THINGS TO RENDER FROM DATABASE
+
 const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
   projectLi.id = `project-list${project.id}`
   projectLi.innerHTML = `
     <a href="#"> <i class=" fa fa-sign-blank text-danger"></i>${project.name} (${findOutstandingTasksInProject(project.id).length})</a>
   `
-  const projectList = document.querySelector('#project-list')
   projectList.append(projectLi)
 }
 
 const renderProjects = (projects) => {
+  projectList.innerHTML = `<li><h4>Projects</h4></li>`
   projects.forEach(renderProjectLi)
 }
 
@@ -120,7 +130,7 @@ const dateTimeParser = (datestr) => {
 
 const renderTaskTr = (task) => {
   const taskTr = document.createElement('tr')
-  taskTr.class = "inbox-small-cells"
+  // taskTr.class = "inbox-small-cells"
   taskTr.id = `task-row${task.id}`
   let parsedDate = dateTimeParser(task.due_date)
   taskTr.innerHTML = `
@@ -133,8 +143,6 @@ const renderTaskTr = (task) => {
       <td class="view-message text-right">${parsedDate}</td>
     </tr>
   `
-
-  const itemList = document.querySelector("#item-list")
   itemList.append(taskTr)
 }
 
