@@ -51,7 +51,7 @@ const addNewTaskForm = (task) => {
       if (event.keyCode === 13)
       addNewTask()
     })
- 
+
 
   const addNewTask = () => {
     alert("task added")
@@ -114,7 +114,7 @@ const findPriorityTasksPairs = () => {
   findPriorityTasksPair(4)
 }
 const inboxTasksForState = () => {
-  state.selectedProject = state.allProjects.find(p => p.name == "inbox")
+  state.selectedProject = state.allProjects.find(p => p.name.toLowerCase() == "inbox")
   state.tasksInProject = findOutstandingTasksInProject(state.selectedProject.id)
 }
 
@@ -190,7 +190,7 @@ const renderTaskTr = (task) => {
 }
 // date/time Picker
 const timepicker = () => {
-  
+
 }
 const renderTasks = (tasks) => {
   tasks.forEach(renderTaskTr)
