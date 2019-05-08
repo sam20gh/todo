@@ -86,6 +86,23 @@ const findOrCreateUser = (username) => {
   }
 }
 
+const addListenerAllPriorities = () => {
+  for (let i = 1; i < state.priority_ostasks.length+1; i++) {
+    document.querySelector(`#priority-${i}`).addEventListener('click', () => {
+      if (state.priority_ostasks.find(o => o.priority == i).tasks.length > 0) {
+        renderTasks(state.priority_ostasks.find(o => o.priority == i).tasks)
+      } else {
+        renderTaskTr()
+      }})
+    }
+}
+
+const addListenerToFilterTabItems = () => {
+  addListenerAllPriorities()
+  viewAll.addEventListener('click', () => renderTasks(state.allOutstandingTasks))
+  noDueDate.addEventListener('click', () => alert("no due date clicked"))
+}
+
 //LOGIC FOR STATE
 const allProjectsForState = () => state.allProjects = state.user.projects
 const allFavouriteProjects = () => {
@@ -138,30 +155,15 @@ const addStuffToState = () => {
   inboxTasksForState()
   findPriorityTasksPairs()
 }
-const renderStuffFromState = () => {
-  renderUserData()
-  renderProjects(state.allProjects)
-  renderTasks(state.tasksInProject)
+
+//LOGIC FOR OTHER RENDERS
+
+// CRUD for tasks
+// date/time Picker
+const timepicker = () => {
 }
 
-const addBasicListeners = () => {
-  addListenerLogin()
-  addNewTaskListener()
-
-}
-
-const makePage = () => {
-  clearPreviousData()
-  addStuffToState()
-  renderStuffFromState()
-}
-
-const clearPreviousData = () => {
-  projectList.innerHTML = ``
-  itemList.innerHTML = ``
-}
-
-//THINGS TO RENDER FROM DATABASE
+//THINGS TO RENDER FROM DATABASE OR STATE
 
 const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
@@ -184,30 +186,71 @@ const dateTimeParser = (datestr) => {
 }
 
 const renderTaskTr = (task) => {
-  const taskTr = document.createElement('tr')
-  // taskTr.class = "inbox-small-cells"
-  taskTr.id = `task-row${task.id}`
-  let parsedDate = dateTimeParser(task.due_date)
-  taskTr.innerHTML = `
-      <td class="inbox-small-cells">
-        <input type="checkbox" class="mail-checkbox">
-      </td>
-      <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-      <td class="view-message ">${task.description}</td>
-      <td class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></td>
-      <td class="view-message text-right">${parsedDate}</td>
-    </tr>
-  `
-  itemList.append(taskTr)
+  if (task) {
+    const taskTr = document.createElement('tr')
+    // taskTr.class = "inbox-small-cells"
+    taskTr.id = `task-row${task.id}`
+    let parsedDate = dateTimeParser(task.due_date)
+    taskTr.innerHTML = `
+        <td class="inbox-small-cells">
+          <input type="checkbox" class="mail-checkbox">
+        </td>
+        <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
+        <td class="view-message ">${task.description}</td>
+        <td class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></td>
+        <td class="view-message text-right">${parsedDate}</td>
+      </tr>
+    `
+    itemList.append(taskTr)}
+    else {
+      alert("There are no tasks in here")
+      // const taskTr = document.createElement('tr')
+      // let parsedDate = dateTimeParser(task.due_date)
+      // taskTr.innerHTML = `
+      //   <td class="inbox-small-cells">
+      //     <input type="checkbox" class="mail-checkbox">
+      //   </td>
+      //   <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
+      //   <td class="view-message ">NOTHING HERE</td>
+      //   <td class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></td>
+      //   <td class="view-message text-right">NOTHING HERE</td>
+      // </tr>
+      // `
+      // itemList.append(taskTr)
+    }
 }
-// date/time Picker
-const timepicker = () => {
 
-}
 const renderTasks = (tasks) => {
+  if (tasks) {
+  itemList.innerHTML=``
   tasks.forEach(renderTaskTr)
+} else if (tasks==="nothing"){
+    const taskTr = document.createElement('tr')
+    taskTr.innerText = "Nothing here"
+    itemList.append(taskTr)
+}
 }
 
+const clearPreviousData = () => {
+  projectList.innerHTML = ``
+  itemList.innerHTML = ``
+}
+const renderStuffFromState = () => {
+  renderUserData()
+  renderProjects(state.allProjects)
+  renderTasks(state.tasksInProject)
+}
+const makePage = () => {
+  clearPreviousData()
+  addStuffToState()
+  renderStuffFromState()
+}
+const addBasicListeners = () => {
+  addListenerLogin()
+  addNewTaskListener()
+  addListenerToFilterTabItems()
+
+}
 const init = () => {
   getData()
   .then(makePage)
