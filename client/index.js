@@ -1,6 +1,12 @@
 //Elements to render stuff to
 const projectList = document.querySelector('#project-list')
 const itemList = document.querySelector("#item-list")
+const priority1 = document.querySelector("#priority-1")
+const priority2 = document.querySelector("#priority-2")
+const priority3 = document.querySelector("#priority-3")
+const priority4 = document.querySelector("#priority-4")
+const viewAll = document.querySelector("#view-all")
+const noDueDate = document.querySelector("#no-due-date")
 
 //Elements to add listeners to
 const loginForm = document.querySelector('#login-form')
@@ -29,8 +35,6 @@ const addNewTaskListener = () => {
   })
 
 }
-
-
 
 const addNewTaskForm = (task) => {
   const newTaskTr = document.createElement('tr')
@@ -117,6 +121,13 @@ const inboxTasksForState = () => {
   state.selectedProject = state.allProjects.find(p => p.name.toLowerCase() == "inbox")
   state.tasksInProject = findOutstandingTasksInProject(state.selectedProject.id)
 }
+const renderUserData = () => {
+  const userProfile = document.querySelector("#user-profile")
+  userProfile.innerHTML = `
+    <h5>${state.user.username}</h5>
+    <span>${state.user.email}</span>
+  `
+}
 
 const addStuffToState = () => {
   allProjectsForState()
@@ -128,6 +139,7 @@ const addStuffToState = () => {
   findPriorityTasksPairs()
 }
 const renderStuffFromState = () => {
+  renderUserData()
   renderProjects(state.allProjects)
   renderTasks(state.tasksInProject)
 }
