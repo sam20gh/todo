@@ -11,4 +11,4 @@ const getData = () =>
   fetch(API)
   .then(resp=> resp.json())
   .then(getAllUsers)
-  .then(users => findUser(users, "sam"))
+  .then(users => findUser(users, "Sam"))

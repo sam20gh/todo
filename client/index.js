@@ -16,6 +16,47 @@ const state = {
   selectedTask: null,
 }
 
+//new Task event listener
+const addNewTaskListener = () => {
+  newTaskButtonLeft.addEventListener("click", event => {
+    event.preventDefault()
+    addNewTaskForm()
+  })
+
+}
+
+
+
+const addNewTaskForm = (task) => {
+  const newTaskTr = document.createElement('tr')
+  newTaskTr.class = "inbox-small-cells"
+  newTaskTr.innerHTML = `
+      <td class="inbox-small-cells">
+        <input type="checkbox" class="mail-checkbox">
+      </td>
+      <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
+      <td class="view-message "><input type='text' class="form-control" placeholder="Task Description" /></td>
+      <td class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></td>
+      <td class="view-message inbox-small-cells"><input type='text' class="form-control" placeholder="due date" /></td>
+    </tr>
+  `
+
+    newTaskTr.addEventListener("keyup", event => {
+      event.preventDefault()
+      if (event.keyCode === 13)
+      addNewTask()
+    })
+ 
+
+  const addNewTask = () => {
+    alert("task added")
+  }
+
+  const itemList = document.querySelector("#item-list")
+  itemList.prepend(newTaskTr)
+
+
+ }
 // LOGIN event listener
 const addListenerLogin = () => {
   loginForm.addEventListener('submit', event => {
@@ -50,7 +91,7 @@ const findOutstandingTasksPriority = (priority_level) => {
   state.priority_taskssize[state.priority_taskssize.find(level => level == priority_level)] = result
 }
 const inboxTasksForState = () => {
-  state.selectedProject = state.allProjects.find(p => p.name == "Inbox")
+  state.selectedProject = state.allProjects.find(p => p.name == "inbox")
   state.tasksInProject = findOutstandingTasksInProject(state.selectedProject.id)
 }
 
@@ -73,6 +114,8 @@ const renderStuffFromState = () => {
 
 const addListeners = () => {
   addListenerLogin()
+  addNewTaskListener()
+
 }
 
 //THINGS TO RENDER FROM DATABASE
@@ -80,7 +123,7 @@ const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
   projectLi.id = `project-list${project.id}`
   projectLi.innerHTML = `
-    <a href="#"> <i class=" fa fa-sign-blank text-danger"></i>${project.name} (${findOutstandingTasksInProject(project.id).length})</a>
+    <a href="#"> <i class=" fa fa-sign-blank text-danger"></i>${project.name} <span class="label label-info pull-right">${findOutstandingTasksInProject(project.id).length}</span></a>
   `
   const projectList = document.querySelector('#project-list')
   projectList.append(projectLi)
@@ -115,7 +158,10 @@ const renderTaskTr = (task) => {
   const itemList = document.querySelector("#item-list")
   itemList.append(taskTr)
 }
-
+// date/time Picker
+const timepicker = () => {
+  
+}
 const renderTasks = (tasks) => {
   tasks.forEach(renderTaskTr)
 }
