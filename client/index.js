@@ -7,6 +7,9 @@ const itemList = document.querySelector("#item-list")
 const viewAll = document.querySelector("#view-all")
 const viewCompleted = document.querySelector("#view-completed")
 const noDueDate = document.querySelector("#no-due-date")
+const todayTab = document.querySelector("#today-tab")
+const thisWeekTab = document.querySelector("#this-week-tab")
+const loginBar = document.querySelector('.login_bar')
 
 //Elements to add listeners to
 const loginForm = document.querySelector('#login-form')
@@ -27,7 +30,8 @@ let state = {
   selectedProject: null,
   tasksInProject: [],
   selectedTask: null,
-  newTask: []
+  newTask: [],
+  switchUser: false
 }
 
 //new Task event listener
@@ -77,11 +81,27 @@ const addNewTaskForm = task => {
 }
 
 // LOGIN event listener
+
 const addListenerLogin = () => {
   loginForm.addEventListener('submit', event => {
     event.preventDefault()
     findOrCreateUser(`${loginForm.username.value}`)
-    loginForm.reset()
+    loginBar.innerHTML = `
+      <button class="btn btn-outline-light my-2 my-sm-0" type="submit" id="switch-btn">Switch User</button>
+      `
+    addListenerSwitchUser()
+  })
+}
+
+const addListenerSwitchUser = () => {
+  const switchBtn = document.querySelector('#switch-btn')
+  switchBtn.addEventListener('click', ()=>{
+    loginBar.innerHTML = `
+    <form id="login-form" name="login" method="post" class="form-inline">
+      <input class="form-control mr-sm-2" type="text" placeholder="username" aria-label="username" name="username">
+      <button class="btn btn-outline-light my-2 my-sm-0" type="submit" name="submit">Login</button>
+    </form>`
+    addListenerLogin()
   })
 }
 
@@ -108,7 +128,7 @@ const findOrCreateUser = (username) => {
     makePage()
   }
   else {
-    alert("Please sign up")
+    // alert("Please sign up")
   }
 }
 
@@ -138,11 +158,13 @@ const addListenerToFilterTabItems = () => {
     state.selectedProject = null
     const projectHeader = document.querySelector('#project-title')
     projectHeader.innerHTML = `
-      <h3>Completed Tasks</h3>
+      <h3>All Completed Tasks</h3>
       `
     renderTasks(state.allCompletedTasks)
   })
-  noDueDate.addEventListener('click', () => alert("no due date clicked to update"))
+  noDueDate.addEventListener('click', () => alert("This is a paid premium feature!"))
+  todayTab.addEventListener('click', () => alert("This is a paid premium feature!"))
+  thisWeekTab.addEventListener('click', () => alert("This is a paid premium feature!"))
 }
 
 //LOGIC FOR STATE
