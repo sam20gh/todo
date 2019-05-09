@@ -34,7 +34,6 @@ const addNewTaskListener = () => {
     event.preventDefault()
     addNewTaskForm()
   })
-
 }
 
 const addNewTaskForm = task => {
@@ -199,16 +198,51 @@ const renderProjectLi = (project) => {
   const projectLi = document.createElement('li')
   projectLi.id = `project-count-${project.id}`
   projectLi.innerHTML = `
-    <a href="#"> <i class="fa fa-circle text-danger"></i>${project.name} <span class="label label-info pull-right">${findOutstandingTasksInProject(project.id).length}</span></a>
+    <a href="#">
+      <i class="fa fa-circle text-danger"></i>
+      ${project.name}
+      <span class="label label-default pull-right" id='edit-project-${project.id}'>Edit</span>
+      <span class="label label-info pull-right">${findOutstandingTasksInProject(project.id).length}</span>
+    </a>
   `
+  const editBtn = projectLi.querySelector('.label-default')
+  editBtn.addEventListener('click', event => {
+    event.stopPropagation()
+    state.selectedProject = project
+    editProject(project)
+  })
   projectLi.addEventListener('click', () => {
+    state.selectedProject = project
     renderTasks(findOutstandingTasksInProject(project.id))
   })
   projectList.append(projectLi)
 }
 
-let showProjectForm = false //for show/hiding New Project Form
+const editProject = (project) => {
+  const selectedProjectLi = document.querySelector(`#project-count-${project.id}`)
+  selectedProjectLi.innerHTML = `
+  <a href="#">
+    <i class="fa fa-circle text-warning"></i>
+    <form id = "edit-project-form">
+      <div class=view-message ><input type='text' class="form-control" value='${project.name}' name="project-name"></div>
+      <button type='submit' class="form-control" value="submit" name="submit">Edit Project</button>
+    </form>
+    <button class="form-control" name="cancel" id="cancel-edit-${project.id}">Cancel</button>
+  </a>
+  `
+  const editProjectForm = selectedProjectLi.querySelector("#edit-project-form")
+  editProjectForm.addEventListener('submit', event=>{
+    event.preventDefault()
+    state.selectedProject.name = editProjectForm["project-name"].value
+    editProjectOnServer()
+    .then(renderProjects(state.allProjects))
+  })
 
+  const cancelEditBtn = document.querySelector(`#cancel-edit-${project.id}`)
+  cancelEditBtn.addEventListener('click', () => renderProjects(state.allProjects))
+}
+
+let showProjectForm = false //for show/hiding New Project Form
 const renderProjects = (projects) => {
   projectList.innerHTML = `
   <li><h4>Projects<button type="button" class="label label-info pull-right" id="project-btn">+</button></h4></li>

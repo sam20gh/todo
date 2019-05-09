@@ -26,6 +26,16 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def update
+    project = Project.find_by(id: params[:id])
+    project.update(project_params)
+    if project
+      render json: project
+    else
+      render json: {error: 'Project is not edited, as some error has occured'}, status: 404
+    end
+  end
+
   private
   def project_params
     params.require(:project).permit(:name,:favourite_status,:archive_status,:user_id,:tasks)

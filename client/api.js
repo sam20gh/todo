@@ -18,3 +18,10 @@ const addProject = () =>
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(state.newProject)
   }).then(resp=>resp.json())
+
+const editProjectOnServer = () =>
+  fetch(PROJECTS+`/${state.selectedProject.id}`,{
+    method: 'PATCH',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(state.selectedProject)
+  }).then(resp => resp.json())
