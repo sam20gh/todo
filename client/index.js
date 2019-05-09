@@ -5,6 +5,7 @@ const projectList = document.querySelector('#project-list')
 const newProjectContainer = document.querySelector('.add-new-project-container')
 const itemList = document.querySelector("#item-list")
 const viewAll = document.querySelector("#view-all")
+const viewCompleted = document.querySelector("#view-completed")
 const noDueDate = document.querySelector("#no-due-date")
 
 //Elements to add listeners to
@@ -16,15 +17,16 @@ let state = {
   user: null,
   allProjects: [],
   allTasks: [], //flattened array
+  inboxId: null,
   allOutstandingTasks: [],
+  allCompletedTasks: [],
   project_ostasks: [],
   priority_ostasks: [{priority: 1, tasks: null}, {priority: 2, tasks: null}, {priority: 3, tasks: null}, {priority: 4, tasks: null}],
   favouriteProjects: [],
   archivedProjects: [],
-  selectedProject: 4,
+  selectedProject: null,
   tasksInProject: [],
   selectedTask: null,
-  newProject: null,
   newTask: []
 }
 
@@ -114,8 +116,12 @@ const addListenerAllPriorities = () => {
   for (let i = 1; i < state.priority_ostasks.length+1; i++) {
     document.querySelector(`#priority-${i}`).addEventListener('click', () => {
       if (state.priority_ostasks.find(o => o.priority == i).tasks.length > 0) {
+        const projectHeader = document.querySelector('#project-title')
+        projectHeader.innerHTML = `<h3>Filtered Tasks: Priority ${i}</h3>`
         renderTasks(state.priority_ostasks.find(o => o.priority == i).tasks)
       } else {
+        const projectHeader = document.querySelector('#project-title')
+        projectHeader.innerHTML = `<h3>Filtered Tasks: Priority ${i}</h3>`
         renderTaskTr()
       }})
     }
@@ -123,7 +129,19 @@ const addListenerAllPriorities = () => {
 
 const addListenerToFilterTabItems = () => {
   addListenerAllPriorities()
-  viewAll.addEventListener('click', () => renderTasks(state.allOutstandingTasks))
+  viewAll.addEventListener('click', () => {
+    state.selectedProject = null
+    renderProjectHeader()
+    renderTasks(state.allOutstandingTasks)
+  })
+  viewCompleted.addEventListener('click', () => {
+    state.selectedProject = null
+    const projectHeader = document.querySelector('#project-title')
+    projectHeader.innerHTML = `
+      <h3>Completed Tasks</h3>
+      `
+    renderTasks(state.allCompletedTasks)
+  })
   noDueDate.addEventListener('click', () => alert("no due date clicked to update"))
 }
 
@@ -142,6 +160,9 @@ const allTasksForState = () => {
 }
 const findAllOutstandingTasks = () => {
   state.allOutstandingTasks = state.allTasks.filter(t => t.status == false)
+}
+const findAllCompletedTasks = () => {
+  state.allCompletedTasks = state.allTasks.filter(t => t.status == true)
 }
 const findOutstandingTasksInProject = (project_id) => {
   let selectedProject = state.allProjects.find(p => p.id == project_id)
@@ -165,6 +186,7 @@ const findPriorityTasksPairs = () => {
 }
 const inboxTasksForState = () => {
   state.selectedProject = state.allProjects.find(p => p.name.toLowerCase() == "inbox")
+  state.inboxId = state.selectedProject.id
   state.tasksInProject = findOutstandingTasksInProject(state.selectedProject.id)
 }
 const renderUserData = () => {
@@ -179,13 +201,12 @@ const addStuffToState = () => {
   allProjectsForState()
   allTasksForState()
   findAllOutstandingTasks()
+  findAllCompletedTasks()
   allFavouriteProjects()
   allArchivedProjects()
   inboxTasksForState()
   findPriorityTasksPairs()
 }
-
-//LOGIC FOR OTHER RENDERS
 
 // CRUD for tasks
 // date/time Picker
@@ -194,7 +215,32 @@ const timepicker = () => {
 
 //THINGS TO RENDER FROM DATABASE OR STATE
 
+const renderNavigationLi = () => {
+  const inboxLi = document.querySelector('#inbox-tab')
+  inboxLi.innerHTML = `
+  <a href="#"><i class="fa fa-inbox"></i> Inbox <span class="label label-info pull-right">${findOutstandingTasksInProject(state.inboxId).length}</span></a>
+  `
+  inboxLi.addEventListener('click', () => {
+    state.selectedProject = state.allProjects.find(p => p.id === state.inboxId)
+    renderProjectHeader()
+  })
+}
+
+const renderProjectHeader = () => {
+  const projectHeader = document.querySelector('#project-title')
+  if (state.selectedProject) {
+    projectHeader.innerHTML = `
+      <h3>${state.selectedProject.name}</h3>
+      `
+    } else {
+      projectHeader.innerHTML = `
+        <h3>All Outstanding Tasks</h3>
+        `
+    }
+}
+
 const renderProjectLi = (project) => {
+  if (project.id != state.inboxId) {
   const projectLi = document.createElement('li')
   projectLi.id = `project-count-${project.id}`
   projectLi.innerHTML = `
@@ -205,18 +251,22 @@ const renderProjectLi = (project) => {
       <span class="label label-info pull-right">${findOutstandingTasksInProject(project.id).length}</span>
     </a>
   `
+
   const editBtn = projectLi.querySelector('.label-default')
   editBtn.addEventListener('click', event => {
     event.stopPropagation()
     state.selectedProject = project
     editProject(project)
   })
+
   projectLi.addEventListener('click', () => {
     state.selectedProject = project
+    renderProjectHeader()
     renderTasks(findOutstandingTasksInProject(project.id))
   })
+
   projectList.append(projectLi)
-}
+}}
 
 const editProject = (project) => {
   const selectedProjectLi = document.querySelector(`#project-count-${project.id}`)
@@ -280,19 +330,24 @@ const renderProjects = (projects) => {
 
   newProjectForm.addEventListener('submit', event => {
     event.preventDefault()
-    state.newProject = {
+    newProject = {
       name: newProjectForm.name.value,
       favourite_status: false,
       archive_status: false,
       user_id: state.user.id,
       tasks: []
     }
+    state.allProjects.push(newProject)
+    state.newProject = newProject
     addProject()
     .then(renderProjectLi)
     newProjectForm.reset()
     showProjectForm = false
     newProjectForm.style.display = 'none'
     state.newProject = null
+    state.selectedProject = newProject
+    renderTasks(newProject.tasks)
+    renderProjectHeader()
   })
 
   projects.forEach(renderProjectLi)
@@ -361,6 +416,8 @@ const clearPreviousData = () => {
 }
 const renderStuffFromState = () => {
   renderUserData()
+  renderNavigationLi()
+  renderProjectHeader()
   renderProjects(state.allProjects)
   renderTasks(state.tasksInProject)
 }

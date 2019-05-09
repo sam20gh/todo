@@ -22,28 +22,29 @@
         </form>
       </div>
     </div>
-  </nav>
+    </nav>
+
   <div class="container">
     <link rel='stylesheet prefetch' href='http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
     <div class="mail-box">
       <aside class="sm-side">
         <div class="user-head">
-          <a class="inbox-avatar" href="javascript:;">
+          <!-- <a class="inbox-avatar" href="javascript:;">
             <img width="64" height="60"
               src="https://i.ibb.co/5kqnXn8/man.png">
-          </a>
+          </a> -->
           <div class="user-name" id="user-profile">
           </div>
-          <a class="mail-dropdown pull-right" href="javascript:;">
+          <!-- <a class="mail-dropdown pull-right" href="javascript:;">
             <i class="fa fa-chevron-down"></i>
-          </a>
+          </a> -->
         </div>
         <div class="inbox-body">
           <a data-toggle="modal" title="new-task" class="btn btn-compose" id="new-task-left">
             New Task
           </a>
           <!-- Modal -->
-          <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal"
+          <!-- <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal"
             class="modal fade" style="display: none;">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -90,13 +91,13 @@
                     </div>
                   </form>
                 </div>
-              </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-          </div><!-- /.modal -->
+              </div> /.modal-content
+            </div>/.modal-dialog
+          </div> /.modal -->
         </div>
-        <ul class="inbox-nav inbox-divider">
-          <li class="active">
-            <a href="#"><i class="fa fa-inbox"></i> Inbox </a>
+        <ul class="nav nav-pills nav-stacked labels-info ">
+          <li id="inbox-tab">
+          </li>
           </li>
           <li>
             <a href="#"><i class="fa fa-calendar"></i> Today</a>
@@ -104,13 +105,13 @@
           <li>
             <a href="#"><i class="fa fa-bookmark-o"></i> This Week</a>
           </li>
-          <li>
+          <!-- <li>
             <a href="#"><i class=" fa fa-external-link"></i> Drafts <span
                 class="label label-info pull-right">30</span></a>
           </li>
           <li>
             <a href="#"><i class=" fa fa-trash-o"></i> Trash</a>
-          </li>
+          </li> -->
         </ul>
 
         <ul class="nav nav-pills nav-stacked labels-info inbox-divider" id="project-list">
@@ -119,15 +120,16 @@
 
         <ul class="nav nav-pills nav-stacked labels-info ">
           <li><h4>Filter</h4></li>
-          <li id="priority-1"><a href="#"><i class=" fa fa-bolt text-success"></i>Priority 1</a></li>
-          <li id="priority-2"><a href="#"><i class=" fa fa-bolt text-success"></i>Priority 2</a></li>
-          <li id="priority-3"><a href="#"><i class=" fa fa-bolt text-success"></i>Priority 3</a></li>
-          <li id="priority-4"><a href="#"><i class=" fa fa-bolt text-success"></i>Priority 4</a></li>
-          <li id="view-all"><a href="#"><i class=" fa fa-circle text-info"></i>View All</a></li>
+          <li id="priority-1"><a href="#"><i class=" fa fa-bolt text-info"></i>Priority 1</a></li>
+          <li id="priority-2"><a href="#"><i class=" fa fa-bolt text-info"></i>Priority 2</a></li>
+          <li id="priority-3"><a href="#"><i class=" fa fa-bolt text-info"></i>Priority 3</a></li>
+          <li id="priority-4"><a href="#"><i class=" fa fa-bolt text-info"></i>Priority 4</a></li>
+          <li id="view-all"><a href="#"><i class=" fa fa-circle text-info"></i>All Outstanding Tasks</a></li>
+          <li id="view-completed"><a href="#"><i class=" fa fa-circle text-success"></i>All Completed Tasks</a></li>
           <li id="no-due-date"><a href="#"><i class=" fa fa-circle text-warning"></i>No Due Date</a></li>
         </ul>
 
-        <div class="inbox-body text-center">
+        <!-- <div class="inbox-body text-center">
           <div class="btn-group">
             <a class="btn mini btn-primary" href="javascript:;">
               <i class="fa fa-plus"></i>
@@ -143,18 +145,18 @@
               <i class="fa fa-cog"></i>
             </a>
           </div>
-        </div>
+        </div> -->
 
       </aside>
       <aside class="lg-side">
         <div class="inbox-head">
-          <h3>Inbox</h3>
-          <form action="#" class="pull-right position">
+          <div id="project-title" class=""></div>
+          <!-- <form action="#" class="pull-right position">
             <div class="input-append">
               <input type="text" class="sr-input" placeholder="Search Tasks">
               <button class="btn sr-btn" type="button"><i class="fa fa-search"></i></button>
             </div>
-          </form>
+          </form> -->
         </div>
         <div class="inbox-body">
           <div class="mail-option">
