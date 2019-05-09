@@ -75,7 +75,7 @@
     background-color: #41cac0!important;
 }
 .nav {
-    display: list-item !important;  
+    display: list-item !important;
 }
 .user-head .user-name h5 a {
     color: #fff;
@@ -395,3 +395,6 @@ ul {
     margin: 0px;
 }
 
+#new-project-form {
+  display: none;
+}

@@ -1,12 +1,12 @@
-
 const baseUrl = "http://localhost:3000/tasks"
 
 //Elements to render stuff to
 const projectList = document.querySelector('#project-list')
+const newProjectContainer = document.querySelector('.add-new-project-container')
 const itemList = document.querySelector("#item-list")
 const viewAll = document.querySelector("#view-all")
+const viewCompleted = document.querySelector("#view-completed")
 const noDueDate = document.querySelector("#no-due-date")
-
 
 
 //Elements to add listeners to
@@ -18,12 +18,14 @@ let state = {
   user: null,
   allProjects: [],
   allTasks: [], //flattened array
+  inboxId: null,
   allOutstandingTasks: [],
+  allCompletedTasks: [],
   project_ostasks: [],
   priority_ostasks: [{priority: 1, tasks: null}, {priority: 2, tasks: null}, {priority: 3, tasks: null}, {priority: 4, tasks: null}],
   favouriteProjects: [],
   archivedProjects: [],
-  selectedProject: 4,
+  selectedProject: null,
   tasksInProject: [],
   selectedTask: [],
   newTask: []
@@ -35,13 +37,13 @@ const addNewTaskListener = () => {
     event.preventDefault()
     addNewTaskForm()
   })
-
 }
 
 const addNewTaskForm = task => {
   const newTaskTr = document.createElement('form')
   newTaskTr.id = "task-form"
   newTaskTr.innerHTML = `
+
    <div class="new-row">
    <div class="col-md-4">
      <div class=view-message ><input type='text' class="form-control" placeholder="Task Description" name="description" required> </div>
@@ -73,6 +75,7 @@ const addNewTaskForm = task => {
             <button type="button" class="btn btn-success" id="saveNewTask" >Save</button>
             <button type="button" class="btn btn-danger" id="cancelNewTask" >Cancel</button>
     </div>
+
    `
   const renderOption = project => {
     const optionEl = document.createElement('option')
@@ -93,6 +96,7 @@ const addNewTaskForm = task => {
      event.preventDefault()
      addNewTask()
    })
+
 
   cancelTask.addEventListener("click", event => {
     event.preventDefault()
@@ -121,23 +125,26 @@ const addNewTaskForm = task => {
   formEl.reset()
 
 
+
   let task = {
      description: state.newTask.name,
      due_date: new Date(state.newTask.date).toISOString(),
      status: false,
+
      priority: state.newTask.priority,
      project_id: state.newTask.project
    }
+
 
    createTask(task)
    newTaskTr.innerHTML = ``
    alert("task added")
  }
 
-  
- const itemList = document.querySelector(".new-task")
- itemList.prepend(newTaskTr)
-}
+
+   const itemList = document.querySelector(".new-task")
+   itemList.prepend(newTaskTr)
+
 
 
 // LOGIN event listener
@@ -180,8 +187,12 @@ const addListenerAllPriorities = () => {
   for (let i = 1; i < state.priority_ostasks.length+1; i++) {
     document.querySelector(`#priority-${i}`).addEventListener('click', () => {
       if (state.priority_ostasks.find(o => o.priority == i).tasks.length > 0) {
+        const projectHeader = document.querySelector('#project-title')
+        projectHeader.innerHTML = `<h3>Filtered Tasks: Priority ${i}</h3>`
         renderTasks(state.priority_ostasks.find(o => o.priority == i).tasks)
       } else {
+        const projectHeader = document.querySelector('#project-title')
+        projectHeader.innerHTML = `<h3>Filtered Tasks: Priority ${i}</h3>`
         renderTaskTr()
       }})
     }
@@ -189,7 +200,19 @@ const addListenerAllPriorities = () => {
 
 const addListenerToFilterTabItems = () => {
   addListenerAllPriorities()
-  viewAll.addEventListener('click', () => renderTasks(state.allOutstandingTasks))
+  viewAll.addEventListener('click', () => {
+    state.selectedProject = null
+    renderProjectHeader()
+    renderTasks(state.allOutstandingTasks)
+  })
+  viewCompleted.addEventListener('click', () => {
+    state.selectedProject = null
+    const projectHeader = document.querySelector('#project-title')
+    projectHeader.innerHTML = `
+      <h3>Completed Tasks</h3>
+      `
+    renderTasks(state.allCompletedTasks)
+  })
   noDueDate.addEventListener('click', () => alert("no due date clicked to update"))
 }
 
@@ -209,10 +232,18 @@ const allTasksForState = () => {
 const findAllOutstandingTasks = () => {
   state.allOutstandingTasks = state.allTasks.filter(t => t.status == false)
 }
+const findAllCompletedTasks = () => {
+  state.allCompletedTasks = state.allTasks.filter(t => t.status == true)
+}
 const findOutstandingTasksInProject = (project_id) => {
-  let allTasksInThisProject = state.allProjects.find(p => p.id == project_id).tasks
-  let result = allTasksInThisProject.filter(t => state.allOutstandingTasks.includes(t))
-  return result
+  let selectedProject = state.allProjects.find(p => p.id == project_id)
+  if (selectedProject) {
+    let allTasksInThisProject = selectedProject.tasks
+    let result = allTasksInThisProject.filter(t => state.allOutstandingTasks.includes(t))
+    return result
+  } else {
+    return result = []
+  }
 }
 const findPriorityTasksPair = (priority_level) => {
   object = state.priority_ostasks.find(o => o.priority == priority_level)
@@ -226,6 +257,7 @@ const findPriorityTasksPairs = () => {
 }
 const inboxTasksForState = () => {
   state.selectedProject = state.allProjects.find(p => p.name.toLowerCase() == "inbox")
+  state.inboxId = state.selectedProject.id
   state.tasksInProject = findOutstandingTasksInProject(state.selectedProject.id)
 }
 const renderUserData = () => {
@@ -240,33 +272,154 @@ const addStuffToState = () => {
   allProjectsForState()
   allTasksForState()
   findAllOutstandingTasks()
+  findAllCompletedTasks()
   allFavouriteProjects()
   allArchivedProjects()
   inboxTasksForState()
   findPriorityTasksPairs()
 }
 
-//LOGIC FOR OTHER RENDERS
-
 // CRUD for tasks
 
 
 //THINGS TO RENDER FROM DATABASE OR STATE
 
+const renderNavigationLi = () => {
+  const inboxLi = document.querySelector('#inbox-tab')
+  inboxLi.innerHTML = `
+  <a href="#"><i class="fa fa-inbox"></i> Inbox <span class="label label-info pull-right">${findOutstandingTasksInProject(state.inboxId).length}</span></a>
+  `
+  inboxLi.addEventListener('click', () => {
+    state.selectedProject = state.allProjects.find(p => p.id === state.inboxId)
+    renderProjectHeader()
+    renderTasks(state.tasksInProject)
+  })
+}
+
+const renderProjectHeader = () => {
+  const projectHeader = document.querySelector('#project-title')
+  if (state.selectedProject) {
+    projectHeader.innerHTML = `
+      <h3>${state.selectedProject.name}</h3>
+      `
+    } else {
+      projectHeader.innerHTML = `
+        <h3>All Outstanding Tasks</h3>
+        `
+    }
+}
+
 const renderProjectLi = (project) => {
+  if (project.id != state.inboxId) {
   const projectLi = document.createElement('li')
   projectLi.id = `project-count-${project.id}`
   projectLi.innerHTML = `
-    <a href="#"> <i class="fa fa-circle text-danger"></i>${project.name} <span class="label label-info pull-right">${findOutstandingTasksInProject(project.id).length}</span></a>
+    <a href="#">
+      <i class="fa fa-circle text-danger"></i>
+      ${project.name}
+      <span class="label label-default pull-right" id='edit-project-${project.id}'>Edit</span>
+      <span class="label label-info pull-right">${findOutstandingTasksInProject(project.id).length}</span>
+    </a>
   `
+
+  const editBtn = projectLi.querySelector('.label-default')
+  editBtn.addEventListener('click', event => {
+    event.stopPropagation()
+    state.selectedProject = project
+    editProject(project)
+  })
+
   projectLi.addEventListener('click', () => {
+    state.selectedProject = project
+    renderProjectHeader()
     renderTasks(findOutstandingTasksInProject(project.id))
   })
+
   projectList.append(projectLi)
+}}
+
+const editProject = (project) => {
+  const selectedProjectLi = document.querySelector(`#project-count-${project.id}`)
+  selectedProjectLi.innerHTML = `
+  <a href="#">
+    <i class="fa fa-circle text-warning"></i>
+    <form id = "edit-project-form">
+      <div class=view-message ><input type='text' class="form-control" value='${project.name}' name="project-name"></div>
+      <button type='submit' class="form-control" value="submit" name="submit">Edit Project</button>
+    </form>
+    <button class="form-control" name="delete" id="delete-project-${project.id}">Delete</button>
+    <button class="form-control" name="cancel" id="cancel-edit-${project.id}">Cancel</button>
+  </a>
+  `
+  const editProjectForm = selectedProjectLi.querySelector("#edit-project-form")
+  editProjectForm.addEventListener('submit', event=>{
+    event.preventDefault()
+    state.selectedProject.name = editProjectForm["project-name"].value
+    editProjectOnServer()
+    .then(renderProjects(state.allProjects))
+  })
+
+  const deleteProjectBtn = selectedProjectLi.querySelector(`#delete-project-${project.id}`)
+  deleteProjectBtn.addEventListener('click', () => {
+    const answer = confirm('Are you sure you want to delete the project?')
+    if (answer) {
+      deleteProjectOnServer()
+      .then(renderProjects)
+    } else {
+      renderProjects(state.allProjects)
+    }
+  })
+
+  const cancelEditBtn = document.querySelector(`#cancel-edit-${project.id}`)
+  cancelEditBtn.addEventListener('click', () => renderProjects(state.allProjects))
 }
 
+let showProjectForm = false //for show/hiding New Project Form
 const renderProjects = (projects) => {
-  projectList.innerHTML = `<li><h4>Projects</h4></li>`
+  projectList.innerHTML = `
+  <li><h4>Projects<button type="button" class="label label-info pull-right" id="project-btn">+</button></h4></li>
+  <div class="add-new-project-container">
+    <form id = "new-project-form">
+      <div class=view-message ><input type='text' class="form-control" placeholder="Name Your Project" name="name"></div>
+      <button type='submit' class="form-control" value="submit" name="submit">Add Project</button>
+    </form>
+  </div>
+  `
+
+  const showProjectBtn = projectList.querySelector('#project-btn')
+  const newProjectForm = projectList.querySelector("#new-project-form")
+
+  showProjectBtn.addEventListener('click', () => {
+    showProjectForm = !showProjectForm
+    if (showProjectForm) {
+      newProjectForm.style.display = 'block'
+    } else {
+      newProjectForm.style.display = 'none'
+    }
+  })
+
+  newProjectForm.addEventListener('submit', event => {
+    event.preventDefault()
+    newProject = {
+      name: newProjectForm.name.value,
+      favourite_status: false,
+      archive_status: false,
+      user_id: state.user.id,
+      tasks: []
+    }
+    state.allProjects.push(newProject)
+    state.newProject = newProject
+    addProject()
+    .then(renderProjectLi)
+    newProjectForm.reset()
+    showProjectForm = false
+    newProjectForm.style.display = 'none'
+    state.newProject = null
+    state.selectedProject = newProject
+    renderTasks(newProject.tasks)
+    renderProjectHeader()
+  })
+
   projects.forEach(renderProjectLi)
 }
 
@@ -299,7 +452,7 @@ const renderTaskTr = (task) => {
     taskTr.innerHTML = `
       <td class="view-message text-center"> </td>
       <td class="view-message text-center"> </td>
-      <td class="view-message text-center">No task in this filter at the moment!</td>
+      <td class="view-message text-center">No task in here at the moment - everything is in order!</td>
       <td class="view-message text-center"></td>
       <td class="view-message text-center"></td>
     </tr>
@@ -319,14 +472,12 @@ const createTask = task => {
 }
 
 const renderTasks = (tasks) => {
-  if (tasks) {
-  itemList.innerHTML=``
-  tasks.forEach(renderTaskTr)
-} else if (tasks==="nothing"){
-    const taskTr = document.createElement('tr')
-    taskTr.innerText = "Nothing here"
-    itemList.append(taskTr)
-}
+  if (tasks.length > 0) {
+    itemList.innerHTML=``
+    tasks.forEach(renderTaskTr)
+  } else {
+    renderTaskTr()
+  }
 }
 
 const clearPreviousData = () => {
@@ -335,6 +486,8 @@ const clearPreviousData = () => {
 }
 const renderStuffFromState = () => {
   renderUserData()
+  renderNavigationLi()
+  renderProjectHeader()
   renderProjects(state.allProjects)
   renderTasks(state.tasksInProject)
 }
@@ -347,7 +500,6 @@ const addBasicListeners = () => {
   addListenerLogin()
   addNewTaskListener()
   addListenerToFilterTabItems()
-
 }
 const init = () => {
   getData()

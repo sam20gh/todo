@@ -18,7 +18,9 @@ class TasksController < ApplicationController
   end
 
   def create
+
     params[:due_date] = params[:due_date].to_time
+
     task = Task.create(task_params)
     if task
         render json: task
@@ -27,7 +29,7 @@ class TasksController < ApplicationController
     end
   end
 
-private
+  private
   def task_params
     params.require(:task).permit(:description, :due_date, :status, :priority, :project_id)
   end
