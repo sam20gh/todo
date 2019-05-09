@@ -3,10 +3,10 @@ const baseUrl = "http://localhost:3000/tasks"
 
 //Elements to render stuff to
 const projectList = document.querySelector('#project-list')
+const newProjectContainer = document.querySelector('.add-new-project-container')
 const itemList = document.querySelector("#item-list")
 const viewAll = document.querySelector("#view-all")
 const noDueDate = document.querySelector("#no-due-date")
-
 
 //Elements to add listeners to
 const loginForm = document.querySelector('#login-form')
@@ -45,7 +45,6 @@ const addNewTaskForm = task => {
      <div class=view-message ><input type='text' class="form-control" placeholder="Task Description" name="description"></div>
      <div class="view-message inbox-small-cells"><i class="fa fa-calendar"></i></div>
      <div class="view-message inbox-small-cells"><input type="text" class="form-control" placeholder="due date" name="date"></div>
-   </tr>
    `
    newTaskTr.addEventListener("keyup", event => {
      event.preventDefault()
@@ -53,12 +52,11 @@ const addNewTaskForm = task => {
       addNewTask()
    })
 
-
-const addNewTask = () => {
-  const formEl = document.querySelector("#task-form")
-  state.newTask.name = formEl.description.value
-  state.newTask.date = formEl.date.value
-  formEl.reset()
+   const addNewTask = () => {
+     const formEl = document.querySelector("#task-form")
+     state.newTask.name = formEl.description.value
+     state.newTask.date = formEl.date.value
+     formEl.reset()
 
   let task = {
      description: state.newTask.name,
@@ -66,15 +64,15 @@ const addNewTask = () => {
      status: false,
      priority: 1,
      project_id: 3
-   }
+    }
 
    createTask(task)
    newTaskTr.innerHTML = ``
    alert("task added")
  }
 
- const itemList = document.querySelector(".new-task")
- itemList.prepend(newTaskTr)
+   const itemList = document.querySelector(".new-task")
+   itemList.prepend(newTaskTr)
 }
 
 // LOGIN event listener
@@ -204,8 +202,36 @@ const renderProjectLi = (project) => {
   projectList.append(projectLi)
 }
 
+let showProjectForm = false //for show/hiding New Project Form
+
 const renderProjects = (projects) => {
-  projectList.innerHTML = `<li><h4>Projects</h4></li>`
+  projectList.innerHTML = `
+  <li><h4>Projects<button type="button" class="label label-info pull-right" id="project-btn">+</button></h4></li>
+  <div class="add-new-project-container">
+    <form id = "new-project-form">
+      <div class=view-message ><input type='text' class="form-control" placeholder="Name Your Project" name="name"></div>
+      <button type='submit' class="form-control" value="submit" name="submit">Add Project</button>
+    </form>
+  </div>
+  `
+
+  const showProjectBtn = projectList.querySelector('#project-btn')
+  const newProjectForm = projectList.querySelector("#new-project-form")
+
+  showProjectBtn.addEventListener('click', () => {
+    showProjectForm = !showProjectForm
+    if (showProjectForm) {
+      newProjectForm.style.display = 'block'
+    } else {
+      newProjectForm.style.display = 'none'
+    }
+  })
+
+  newProjectForm.addEventListener('submit', event => {
+    event.preventDefault()
+    alert("clicked")
+  })
+
   projects.forEach(renderProjectLi)
 }
 
@@ -259,13 +285,13 @@ const createTask = task => {
 
 const renderTasks = (tasks) => {
   if (tasks) {
-  itemList.innerHTML=``
-  tasks.forEach(renderTaskTr)
-} else if (tasks==="nothing"){
+    itemList.innerHTML=``
+    tasks.forEach(renderTaskTr)
+  } else if (tasks==="nothing") {
     const taskTr = document.createElement('tr')
     taskTr.innerText = "Nothing here"
     itemList.append(taskTr)
-}
+  }
 }
 
 const clearPreviousData = () => {
@@ -286,7 +312,6 @@ const addBasicListeners = () => {
   addListenerLogin()
   addNewTaskListener()
   addListenerToFilterTabItems()
-
 }
 const init = () => {
   getData()
