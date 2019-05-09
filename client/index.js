@@ -24,6 +24,7 @@ let state = {
   selectedProject: 4,
   tasksInProject: [],
   selectedTask: null,
+  newProject: null,
   newTask: []
 }
 
@@ -233,18 +234,19 @@ const renderProjects = (projects) => {
 
   newProjectForm.addEventListener('submit', event => {
     event.preventDefault()
-    const project = {
-      id: 40, //TO UPDATE
+    state.newProject = {
       name: newProjectForm.name.value,
       favourite_status: false,
       archive_status: false,
       user_id: state.user.id,
-      tasks: [],
+      tasks: []
     }
-    renderProjectLi(project)
+    addProject()
+    .then(renderProjectLi)
     newProjectForm.reset()
     showProjectForm = false
     newProjectForm.style.display = 'none'
+    state.newProject = null
   })
 
   projects.forEach(renderProjectLi)
