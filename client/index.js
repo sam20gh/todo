@@ -227,6 +227,7 @@ const editProject = (project) => {
       <div class=view-message ><input type='text' class="form-control" value='${project.name}' name="project-name"></div>
       <button type='submit' class="form-control" value="submit" name="submit">Edit Project</button>
     </form>
+    <button class="form-control" name="delete" id="delete-project-${project.id}">Delete</button>
     <button class="form-control" name="cancel" id="cancel-edit-${project.id}">Cancel</button>
   </a>
   `
@@ -236,6 +237,17 @@ const editProject = (project) => {
     state.selectedProject.name = editProjectForm["project-name"].value
     editProjectOnServer()
     .then(renderProjects(state.allProjects))
+  })
+
+  const deleteProjectBtn = selectedProjectLi.querySelector(`#delete-project-${project.id}`)
+  deleteProjectBtn.addEventListener('click', () => {
+    const answer = confirm('Are you sure you want to delete the project?')
+    if (answer) {
+      deleteProjectOnServer()
+      .then(renderProjects)
+    } else {
+      renderProjects(state.allProjects)
+    }
   })
 
   const cancelEditBtn = document.querySelector(`#cancel-edit-${project.id}`)

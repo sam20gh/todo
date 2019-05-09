@@ -25,3 +25,9 @@ const editProjectOnServer = () =>
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(state.selectedProject)
   }).then(resp => resp.json())
+
+const deleteProjectOnServer = () =>
+  fetch(PROJECTS+`/${state.selectedProject.id}`,{
+    method: 'DELETE',
+    headers: {'Content-Type': 'application/json'}
+  }).then(resp => resp.json())

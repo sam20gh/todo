@@ -36,6 +36,16 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def destroy
+    project = Project.find_by(id: params[:id])
+    user = User.find_by(id: project.user_id)
+    if project.destroy
+      render json: user.projects
+    else
+      render json: {error: 'Project is not deleted, as some error has occured'}, status: 404
+    end
+  end
+
   private
   def project_params
     params.require(:project).permit(:name,:favourite_status,:archive_status,:user_id,:tasks)
