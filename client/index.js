@@ -1,4 +1,3 @@
-
 const baseUrl = "http://localhost:3000/tasks"
 
 //Elements to render stuff to
@@ -145,9 +144,14 @@ const findAllOutstandingTasks = () => {
   state.allOutstandingTasks = state.allTasks.filter(t => t.status == false)
 }
 const findOutstandingTasksInProject = (project_id) => {
-  let allTasksInThisProject = state.allProjects.find(p => p.id == project_id).tasks
-  let result = allTasksInThisProject.filter(t => state.allOutstandingTasks.includes(t))
-  return result
+  let selectedProject = state.allProjects.find(p => p.id == project_id)
+  if (selectedProject) {
+    let allTasksInThisProject = selectedProject.tasks
+    let result = allTasksInThisProject.filter(t => state.allOutstandingTasks.includes(t))
+    return result
+  } else {
+    return result = []
+  }
 }
 const findPriorityTasksPair = (priority_level) => {
   object = state.priority_ostasks.find(o => o.priority == priority_level)
@@ -229,7 +233,18 @@ const renderProjects = (projects) => {
 
   newProjectForm.addEventListener('submit', event => {
     event.preventDefault()
-    alert("clicked")
+    const project = {
+      id: 40, //TO UPDATE
+      name: newProjectForm.name.value,
+      favourite_status: false,
+      archive_status: false,
+      user_id: state.user.id,
+      tasks: [],
+    }
+    renderProjectLi(project)
+    newProjectForm.reset()
+    showProjectForm = false
+    newProjectForm.style.display = 'none'
   })
 
   projects.forEach(renderProjectLi)
@@ -265,7 +280,7 @@ const renderTaskTr = (task) => {
     taskTr.innerHTML = `
       <td class="view-message text-center"> </td>
       <td class="view-message text-center"> </td>
-      <td class="view-message text-center">No task in this filter at the moment!</td>
+      <td class="view-message text-center">No task in here at the moment - everything is in order!</td>
       <td class="view-message text-center"></td>
       <td class="view-message text-center"></td>
     </tr>
@@ -284,13 +299,11 @@ const createTask = task => {
 }
 
 const renderTasks = (tasks) => {
-  if (tasks) {
+  if (tasks.length > 0) {
     itemList.innerHTML=``
     tasks.forEach(renderTaskTr)
-  } else if (tasks==="nothing") {
-    const taskTr = document.createElement('tr')
-    taskTr.innerText = "Nothing here"
-    itemList.append(taskTr)
+  } else {
+    renderTaskTr()
   }
 }
 
