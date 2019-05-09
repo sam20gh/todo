@@ -18,6 +18,7 @@ class TasksController < ApplicationController
   end
 
   def create
+    params[:due_date] = params[:due_date].to_time
     task = Task.create(task_params)
     if task
         render json: task
