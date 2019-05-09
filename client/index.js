@@ -223,6 +223,7 @@ const renderNavigationLi = () => {
   inboxLi.addEventListener('click', () => {
     state.selectedProject = state.allProjects.find(p => p.id === state.inboxId)
     renderProjectHeader()
+    renderTasks(state.tasksInProject)
   })
 }
 
