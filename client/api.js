@@ -31,3 +31,19 @@ const deleteProjectOnServer = () =>
     method: 'DELETE',
     headers: {'Content-Type': 'application/json'}
   }).then(resp => resp.json())
+
+const createTask = task =>
+  fetch(baseUrl, {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(task)
+  }).then(resp => resp.json())
+
+//update
+const updateTask = task => {
+  fetch(baseUrl + `/${task.id}`, {
+    method: "PATCH",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(task)
+  }).then(resp => resp.json())
+}
