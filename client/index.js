@@ -107,7 +107,6 @@ const addNewTaskForm = task => {
   const timeField = newTaskTr.querySelector("#datetimepicker")
   timeField.addEventListener("click", () => {
     event.preventDefault()
-    console.log("done")
     $('#datetimepicker').datetimepicker({
       inline: true,
       sideBySide: true
@@ -136,9 +135,15 @@ const addNewTaskForm = task => {
    }
 
 
-   createTask(task)
    newTaskTr.innerHTML = ``
-   alert("task added")
+   createTask(task)
+   .then(task =>
+     {
+     
+     addTaskToArray(state.tasksInProject, task)
+     renderTasks(state.tasksInProject)
+     formEl.reset()
+   })
  }
 
 
@@ -436,7 +441,7 @@ const renderTaskTr = (task) => {
     let parsedDate = dateTimeParser(task.due_date)
     taskTr.innerHTML = `
         <td class="inbox-small-cells">
-          <input type="checkbox" class="mail-checkbox">
+          <input type="checkbox" class="mail-checkbox" name="checkbox">
         </td>
         <td class="inbox-small-cells"><i class="fa fa-heart" aria-hidden="true"></i></td>
         <td class="view-message ">${task.description}</td>
@@ -446,6 +451,17 @@ const renderTaskTr = (task) => {
       </tr>
     `
     itemList.append(taskTr)
+    const archiveTask = taskTr.querySelector(".mail-checkbox")
+    archiveTask.addEventListener('click', event => {
+      event.preventDefault()
+      task.status = true
+      taskTr.innerHTML =``
+      findAllOutstandingTasks()
+      findAllCompletedTasks()
+      updateTask(task)
+    })
+
+
   } else {
     itemList.innerHTML = ``
     const taskTr = document.createElement('tr')
@@ -457,19 +473,13 @@ const renderTaskTr = (task) => {
       <td class="view-message text-center"></td>
     </tr>
     `
-    itemList.append(taskTr)
+    itemList.append(taskTr)  
   }
   
 }
 
 //vcreate new task
-const createTask = task => {
-  fetch(baseUrl, {
-    method: "POST",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(task)
-  }).then(resp => resp.json())
-}
+
 
 const renderTasks = (tasks) => {
   if (tasks.length > 0) {
