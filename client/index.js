@@ -143,7 +143,7 @@ const addNewTaskForm = task => {
 
 
    const itemList = document.querySelector(".new-task")
-   itemList.prepend(newTaskTr)
+   itemList.prepend(newTaskTr)}
 
 
 
