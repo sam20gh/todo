@@ -147,11 +147,12 @@ const addNewTaskForm = task => {
 
 
    const itemList = document.querySelector(".new-task")
-   itemList.prepend(newTaskTr)}
+   itemList.prepend(newTaskTr)
+ }
 
 
 
-// LOGIN event listener
+// Switch user event listener
 
 const addListenerLogin = () => {
   loginForm.addEventListener('submit', event => {
