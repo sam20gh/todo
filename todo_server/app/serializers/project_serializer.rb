@@ -1,3 +1,3 @@
 class ProjectSerializer < ActiveModel::Serializer
-  attributes :id, :name, :favourite_status, :archive_status, :user_id
+  attributes :id, :name, :favourite_status, :archive_status, :user_id, :tasks
 end

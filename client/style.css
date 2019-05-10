@@ -9,6 +9,24 @@
     width: 100%;
     display: inline-block;
 }
+.new-task .col-md-2 .col-md-4{
+    padding-right: 15px;
+    padding-left: 0px !important;
+}
+.login_bar {
+    float: right;
+}
+.new-row {
+    width: 100%;
+    display: inline-block;
+    margin: 0
+}
+.form-control {
+    min-height: 25px !important;
+}
+.input-group-addon:last-child {
+    padding-right: 20px !important;
+}
 .mail-box aside {
     display: table-cell;
     float: none;

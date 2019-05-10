@@ -2,12 +2,22 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+      integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.collapsible/1.2/jquery.collapsible.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/src/js/bootstrap-datetimepicker.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.css" />
     <link rel="stylesheet" href="style.css">
     <title>Todo-ish Clone</title>
   </head>
   <body>
+
     <nav class="navbar navbar-expand-lg navbar-danger bg-danger">
       <a class="navbar-brand" href="https://i.ibb.co/ggR0j6v/to-do.png">Logo</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,7 +26,10 @@
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="login_bar">
-        <button class="btn btn-outline-light my-2 my-sm-0" type="submit" id="switch-btn">Switch User</button>
+        <form id="login-form" name="login" method="post" class="form-inline">
+          <input class="form-control mr-sm-2" type="text" placeholder="username" aria-label="username" name="username">
+          <button class="btn btn-outline-light my-2 my-sm-0" type="submit" name="submit">Switch User</button>
+        </form>
       </div>
     </div>
     </nav>
@@ -26,71 +39,15 @@
     <div class="mail-box">
       <aside class="sm-side">
         <div class="user-head">
-          <!-- <a class="inbox-avatar" href="javascript:;">
-            <img width="64" height="60"
-              src="https://i.ibb.co/5kqnXn8/man.png">
-          </a> -->
+
           <div class="user-name" id="user-profile">
           </div>
-          <!-- <a class="mail-dropdown pull-right" href="javascript:;">
-            <i class="fa fa-chevron-down"></i>
-          </a> -->
+
         </div>
         <div class="inbox-body">
           <a data-toggle="modal" title="new-task" class="btn btn-compose" id="new-task-left">
             New Task
           </a>
-          <!-- Modal -->
-          <!-- <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal"
-            class="modal fade" style="display: none;">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                  <h4 class="modal-title">Compose</h4>
-                </div>
-                <div class="modal-body">
-                  <form role="form" class="form-horizontal">
-                    <div class="form-group">
-                      <label class="col-lg-2 control-label">To</label>
-                      <div class="col-lg-10">
-                        <input type="text" placeholder="" id="inputEmail1" class="form-control">
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-lg-2 control-label">Cc / Bcc</label>
-                      <div class="col-lg-10">
-                        <input type="text" placeholder="" id="cc" class="form-control">
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-lg-2 control-label">Subject</label>
-                      <div class="col-lg-10">
-                        <input type="text" placeholder="" id="inputPassword1" class="form-control">
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-lg-2 control-label">Message</label>
-                      <div class="col-lg-10">
-                        <textarea rows="10" cols="30" class="form-control" id="" name=""></textarea>
-                      </div>
-                    </div>
-
-                    <div class="form-group">
-                      <div class="col-lg-offset-2 col-lg-10">
-                        <span class="btn green fileinput-button">
-                          <i class="fa fa-plus fa fa-white"></i>
-                          <span>Attachment</span>
-                          <input type="file" name="files[]" multiple="">
-                        </span>
-                        <button class="btn btn-send" type="submit">Send</button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div> /.modal-content
-            </div>/.modal-dialog
-          </div> /.modal -->
         </div>
         <ul class="nav nav-pills nav-stacked labels-info ">
           <li id="inbox-tab">
@@ -102,13 +59,10 @@
           <li id='this-week-tab'>
             <a href="#"><i class="fa fa-bookmark-o"></i> This Week</a>
           </li>
-          <!-- <li>
-            <a href="#"><i class=" fa fa-external-link"></i> Drafts <span
-                class="label label-info pull-right">30</span></a>
-          </li>
+
           <li>
             <a href="#"><i class=" fa fa-trash-o"></i> Trash</a>
-          </li> -->
+          </li>
         </ul>
 
         <ul class="nav nav-pills nav-stacked labels-info inbox-divider" id="project-list">
@@ -148,12 +102,6 @@
       <aside class="lg-side">
         <div class="inbox-head">
           <div id="project-title" class=""></div>
-          <!-- <form action="#" class="pull-right position">
-            <div class="input-append">
-              <input type="text" class="sr-input" placeholder="Search Tasks">
-              <button class="btn sr-btn" type="button"><i class="fa fa-search"></i></button>
-            </div>
-          </form> -->
         </div>
         <div class="inbox-body">
           <div class="mail-option">
@@ -211,19 +159,13 @@
               </li>
             </ul>
           </div>
+
         <div class="new-task"></div>
+
           <table class="table table-inbox table-hover">
 
             <tbody id ="item-list">
-              <!-- <tr class="unread">
-                <td class="inbox-small-cells">
-                  <input type="checkbox" class="mail-checkbox">
-                </td>
-                <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                <td class="view-message ">Added a new class: Login Class Fast Site</td>
-                <td class="view-message  inbox-small-cells"><i class="fa fa-calendar"></i></td>
-                <td class="view-message  text-right">9:27 AM</td>
-              </tr> -->
+
             </tbody>
           </table>
         </div>
@@ -232,11 +174,9 @@
   </div>
   <script type="text/javascript" src="api.js"></script>
   <script type="text/javascript" src="index.js"></script>
-  <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+   <script type="text/javascript">
+    $('tbody').sortable();
+  </script>
 
   </body>
 </html>
