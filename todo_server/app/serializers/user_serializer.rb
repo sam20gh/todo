@@ -7,7 +7,7 @@ class UserSerializer < ActiveModel::Serializer
     has_many :tasks
 
     class TaskSerializer < ActiveModel::Serializer
-      attributes :id, :description, :due_date, :status, :priority
+      attributes :id, :description, :due_date, :status, :priority, :project_id
     end
 
   end
