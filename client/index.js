@@ -58,7 +58,7 @@ const addNewTaskForm = task => {
                 </div>
             </div>
    </div>
-        
+
   <div class="col-md-2">
     <select id="priority" name="priority" class="form-control">
       <option value="1">Priority 1</option>
@@ -112,7 +112,7 @@ const addNewTaskForm = task => {
       inline: true,
       sideBySide: true
       });
-  
+
   })
 
 
@@ -157,7 +157,7 @@ const addListenerLogin = () => {
 }
 
 const findOrCreateUser = (username) => {
-  user = state.users.find(x => x.username === username)
+  user = state.users.find(x => x.username.toLowerCase() === username.toLowerCase())
   if (user) {
     allUsers = state.users
     state = {
@@ -179,7 +179,7 @@ const findOrCreateUser = (username) => {
     makePage()
   }
   else {
-    alert("Please sign up")
+    alert("You are not a registered user. Please contact existing users for a high-level referral ლ( ̅°̅ ੪ ̅°̅ )ლ ")
   }
 }
 
@@ -224,10 +224,10 @@ const allFavouriteProjects = () => {
 const allArchivedProjects = () => {
   state.archivedProjects = state.allProjects.filter(p => p.archive_status === true)
 }
-const addTaskToArray = (array, task) => array.push(task)
-const addTasksToArray = (array, tasks) => tasks.forEach(t => addTaskToArray(array,t))
+const addItemToArray = (array, item) => array.push(item)
+const addItemsToArray = (array, items) => items.forEach(item => addItemToArray(array,item))
 const allTasksForState = () => {
-  state.allProjects.forEach(p => addTasksToArray(state.allTasks, p["tasks"]))
+  state.allProjects.forEach(p => addItemsToArray(state.allTasks, p["tasks"]))
 }
 const findAllOutstandingTasks = () => {
   state.allOutstandingTasks = state.allTasks.filter(t => t.status == false)
@@ -410,14 +410,17 @@ const renderProjects = (projects) => {
     state.allProjects.push(newProject)
     state.newProject = newProject
     addProject()
-    .then(renderProjectLi)
-    newProjectForm.reset()
-    showProjectForm = false
-    newProjectForm.style.display = 'none'
-    state.newProject = null
-    state.selectedProject = newProject
-    renderTasks(newProject.tasks)
-    renderProjectHeader()
+    .then(project => {
+      addItemToArray(state.allProjects, project)
+      state.selectedProject = project
+      renderProjectLi(state.selectedProject)
+      renderTasks(state.selectedProject.tasks)
+      renderProjectHeader()
+      newProjectForm.reset()
+      showProjectForm = false
+      newProjectForm.style.display = 'none'
+      state.newProject = null
+    })
   })
 
   projects.forEach(renderProjectLi)
@@ -459,7 +462,7 @@ const renderTaskTr = (task) => {
     `
     itemList.append(taskTr)
   }
-  
+
 }
 
 //vcreate new task
