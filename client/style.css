@@ -205,7 +205,7 @@ ul.labels-info li a i {
     padding: 12px !important;
 }
 .table-inbox tr td:hover {
-    cursor: pointer;
+    cursor: auto;
 }
 .table-inbox tr td .fa-star.inbox-started, .table-inbox tr td .fa-star:hover {
     color: #f78a09;
