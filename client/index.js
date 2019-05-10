@@ -364,7 +364,14 @@ const editProject = (project) => {
     const answer = confirm('Are you sure you want to delete the project?')
     if (answer) {
       deleteProjectOnServer()
-      .then(renderProjects)
+      .then(projects => {
+        renderProjects(projects)
+        //need to delete tasks related to this project from All Outstanding Tasks
+        //state.selectedProject.tasks
+        state.selectedProject = state.allProjects.find(p => p.id == state.inboxId)
+        renderTasks(findOutstandingTasksInProject(state.selectedProject.id))
+        renderProjectHeader()
+      })
     } else {
       renderProjects(state.allProjects)
     }
