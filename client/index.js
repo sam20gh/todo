@@ -7,11 +7,14 @@ const itemList = document.querySelector("#item-list")
 const viewAll = document.querySelector("#view-all")
 const viewCompleted = document.querySelector("#view-completed")
 const noDueDate = document.querySelector("#no-due-date")
-
+const todayTab = document.querySelector("#today-tab")
+const thisWeekTab = document.querySelector("#this-week-tab")
+const loginBar = document.querySelector('.login_bar')
 
 //Elements to add listeners to
-const loginForm = document.querySelector('#login-form')
+const switchBtn = document.querySelector('#switch-btn')
 const newTaskButtonLeft = document.querySelector("#new-task-left")
+const loginForm = document.querySelector('#login-form')
 
 let state = {
   users: null,
@@ -27,9 +30,12 @@ let state = {
   archivedProjects: [],
   selectedProject: null,
   tasksInProject: [],
-  selectedTask: [],
+
+  selectedTask: null,
   newTask: [],
+  switchUser: false
   addTaskStatus: false
+
 }
 
 //new Task event listener
@@ -75,6 +81,38 @@ const addNewTaskForm = task => {
         </select>
       </div>
 
+
+   <div class="new-row">
+   <div class="col-md-4">
+     <div class=view-message ><input type='text' class="form-control" placeholder="Task Description" name="description" required> </div>
+     </div>
+     <div class="col-md-4">
+     <div class="form-group">
+                <div class='input-group date' id='datetimepicker'>
+                    <input type='text' class="form-control" name="date" required />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+   </div>
+
+  <div class="col-md-2">
+    <select id="priority" name="priority" class="form-control">
+      <option value="1">Priority 1</option>
+      <option value="2">Priority 2</option>
+      <option value="3">Priority 3</option>
+      <option value="4">Priority 4</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select id="project" name="project-id" class="form-control">
+    </select>
+    </div>
+     </div>
+            <button type="button" class="btn btn-success" id="saveNewTask" >Save</button>
+            <button type="button" class="btn btn-danger" id="cancelNewTask" >Cancel</button>
+
     </div>
 
     <button type="button" class="btn btn-success" id="saveNewTask" >Save</button>
@@ -112,6 +150,7 @@ const addNewTaskForm = task => {
     $('#datetimepicker').datetimepicker({
       sideBySide: true,
       });
+
   })
 
   const addNewTask = () => {
@@ -143,22 +182,34 @@ const addNewTaskForm = task => {
    })
  }
 
+
    const itemList = document.querySelector(".new-task")
    itemList.prepend(newTaskTr)
 }
 
+// Switch user event listener
 
-// LOGIN event listener
 const addListenerLogin = () => {
   loginForm.addEventListener('submit', event => {
     event.preventDefault()
+    state.switchUser = !state.switchUser
     findOrCreateUser(`${loginForm.username.value}`)
-    loginForm.reset()
+  })
+}
+
+const addListenerSwitchUser = () => {
+  switchBtn.addEventListener('click', event => {
+    state.switchUser = !state.switchUser
+    if (state.switchUser) {
+      loginForm.style.display = 'block'
+    } else {
+      loginForm.style.display = 'none'
+    }
   })
 }
 
 const findOrCreateUser = (username) => {
-  user = state.users.find(x => x.username === username)
+  user = state.users.find(x => x.username.toLowerCase() === username.toLowerCase())
   if (user) {
     allUsers = state.users
     state = {
@@ -166,21 +217,32 @@ const findOrCreateUser = (username) => {
       user: null,
       allProjects: [],
       allTasks: [], //flattened array
+      inboxId: null,
       allOutstandingTasks: [],
+      allCompletedTasks: [],
       project_ostasks: [],
       priority_ostasks: [{priority: 1, tasks: null}, {priority: 2, tasks: null}, {priority: 3, tasks: null}, {priority: 4, tasks: null}],
       favouriteProjects: [],
       archivedProjects: [],
-      selectedProject: 4,
+      selectedProject: null,
       tasksInProject: [],
-      selectedTask: null
+      selectedTask: null,
+      newTask: [],
+      switchUser: false
     }
     state.user = user
     state.users = allUsers
     makePage()
   }
   else {
-    alert("Please sign up")
+    const answer = confirm(`${username} is not a registered user. Contact existing users for an invitation to join this exclusive todolist ლ( ̅°̅ ੪ ̅°̅ )ლ If it's a typo, click OK to try again.`)
+    if (answer) {
+      loginForm.style.display = "block"
+      state.switchUser = !state.switchUser
+    } else {
+      loginForm.style.display = 'none'
+      loginForm.reset()
+    }
   }
 }
 
@@ -210,11 +272,13 @@ const addListenerToFilterTabItems = () => {
     state.selectedProject = null
     const projectHeader = document.querySelector('#project-title')
     projectHeader.innerHTML = `
-      <h3>Completed Tasks</h3>
+      <h3>All Completed Tasks</h3>
       `
     renderTasks(state.allCompletedTasks)
   })
-  noDueDate.addEventListener('click', () => alert("no due date clicked to update"))
+  noDueDate.addEventListener('click', () => alert("This is a paid premium feature!"))
+  todayTab.addEventListener('click', () => alert("This is a paid premium feature!"))
+  thisWeekTab.addEventListener('click', () => alert("This is a paid premium feature!"))
 }
 
 //LOGIC FOR STATE
@@ -225,10 +289,10 @@ const allFavouriteProjects = () => {
 const allArchivedProjects = () => {
   state.archivedProjects = state.allProjects.filter(p => p.archive_status === true)
 }
-const addTaskToArray = (array, task) => array.push(task)
-const addTasksToArray = (array, tasks) => tasks.forEach(t => addTaskToArray(array,t))
+const addItemToArray = (array, item) => array.push(item)
+const addItemsToArray = (array, items) => items.forEach(item => addItemToArray(array,item))
 const allTasksForState = () => {
-  state.allProjects.forEach(p => addTasksToArray(state.allTasks, p["tasks"]))
+  state.allProjects.forEach(p => addItemsToArray(state.allTasks, p["tasks"]))
 }
 const findAllOutstandingTasks = () => {
   state.allOutstandingTasks = state.allTasks.filter(t => t.status == false)
@@ -365,7 +429,14 @@ const editProject = (project) => {
     const answer = confirm('Are you sure you want to delete the project?')
     if (answer) {
       deleteProjectOnServer()
-      .then(renderProjects)
+      .then(projects => {
+        renderProjects(projects)
+        //need to delete tasks related to this project from All Outstanding Tasks
+        //state.selectedProject.tasks
+        state.selectedProject = state.allProjects.find(p => p.id == state.inboxId)
+        renderTasks(findOutstandingTasksInProject(state.selectedProject.id))
+        renderProjectHeader()
+      })
     } else {
       renderProjects(state.allProjects)
     }
@@ -411,14 +482,17 @@ const renderProjects = (projects) => {
     state.allProjects.push(newProject)
     state.newProject = newProject
     addProject()
-    .then(renderProjectLi)
-    newProjectForm.reset()
-    showProjectForm = false
-    newProjectForm.style.display = 'none'
-    state.newProject = null
-    state.selectedProject = newProject
-    renderTasks(newProject.tasks)
-    renderProjectHeader()
+    .then(project => {
+      addItemToArray(state.allProjects, project)
+      state.selectedProject = project
+      renderProjectLi(state.selectedProject)
+      renderTasks(state.selectedProject.tasks)
+      renderProjectHeader()
+      newProjectForm.reset()
+      showProjectForm = false
+      newProjectForm.style.display = 'none'
+      state.newProject = null
+    })
   })
 
   projects.forEach(renderProjectLi)
@@ -504,6 +578,7 @@ const makePage = () => {
   renderStuffFromState()
 }
 const addBasicListeners = () => {
+  addListenerSwitchUser()
   addListenerLogin()
   addNewTaskListener()
   addListenerToFilterTabItems()

@@ -82,6 +82,9 @@ select {
     margin-bottom: 0;
     margin-top: 15px;
 }
+.user-head .btn {
+    float: right;
+}
 .navbar {
     border-radius: 0px !important;
 }
@@ -411,4 +414,14 @@ ul {
 
 #new-project-form {
   display: none;
+}
+
+#login-form {
+  display: none;
+}
+
+.navbar-brand img {
+    display: inline-block;
+    height: 100%;
+    max-width: 100%;
 }
