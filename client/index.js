@@ -437,9 +437,8 @@ const renderTaskTr = (task) => {
         </td>
         <td class="inbox-small-cells"><i class="fa fa-heart" aria-hidden="true"></i></td>
         <td class="view-message ">${task.description}</td>
-        <td class="view-message inbox-small-cells"><i>Priority: ${task.priority}</i></td>
-        <td class="view-message inbox-small-cells"><i>${taskProjectName}</i></td>
-        <td class="view-message inbox-small-cells"><i class="fa fa-edit"></i></td>
+        <td class="view-message inbox-small-cells text-right"><i>${taskProjectName}</i></td>
+        <td class="view-message inbox-small-cells text-right"><i>Priority: ${task.priority}</i></td>
         <td class="view-message text-right">${parsedDate}</td>
       </tr>
     `
