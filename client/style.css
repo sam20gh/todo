@@ -401,3 +401,13 @@ ul {
 #new-project-form {
   display: none;
 }
+
+#login-form {
+  display: none;
+}
+
+.navbar-brand img {
+    display: inline-block;
+    height: 100%;
+    max-width: 100%;
+}

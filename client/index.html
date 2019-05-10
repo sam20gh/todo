@@ -19,16 +19,17 @@
   <body>
 
     <nav class="navbar navbar-expand-lg navbar-danger bg-danger">
-      <a class="navbar-brand" href="https://i.ibb.co/ggR0j6v/to-do.png">Logo</a>
+      <a class="navbar-brand"><img src="https://i.ibb.co/ggR0j6v/to-do.png"></a><h1>TODO...ISH</h1>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="user-name"><button class="btn btn-outline-light my-2 my-sm-0" type="button" id="switch-btn">Switch User</button></div>
       <div class="login_bar">
         <form id="login-form" name="login" method="post" class="form-inline">
           <input class="form-control mr-sm-2" type="text" placeholder="username" aria-label="username" name="username">
-          <button class="btn btn-outline-light my-2 my-sm-0" type="submit" name="submit">Switch User</button>
+          <button class="btn btn-outline-light my-2 my-sm-0" type="submit" name="submit">Login</button>
         </form>
       </div>
     </div>
@@ -41,9 +42,7 @@
         <div class="user-head">
 
           <div class="user-name" id="user-profile">
-
           </div>
-          <div class="user-name"><button class="btn btn-outline-light my-2 my-sm-0" type="button" id="switch-user">Switch User</button></div>
 
         </div>
         <div class="inbox-body">
@@ -176,9 +175,9 @@
   </div>
   <script type="text/javascript" src="api.js"></script>
   <script type="text/javascript" src="index.js"></script>
-   <script type="text/javascript">
+   <!-- <script type="text/javascript">
     $('tbody').sortable();
-  </script>
+  </script> -->
 
   </body>
 </html>

@@ -11,10 +11,10 @@ const todayTab = document.querySelector("#today-tab")
 const thisWeekTab = document.querySelector("#this-week-tab")
 const loginBar = document.querySelector('.login_bar')
 
-
 //Elements to add listeners to
-const loginForm = document.querySelector('#login-form')
+const switchBtn = document.querySelector('#switch-btn')
 const newTaskButtonLeft = document.querySelector("#new-task-left")
+const loginForm = document.querySelector('#login-form')
 
 let state = {
   users: null,
@@ -156,23 +156,19 @@ const addNewTaskForm = task => {
 const addListenerLogin = () => {
   loginForm.addEventListener('submit', event => {
     event.preventDefault()
+    state.switchUser = !state.switchUser
     findOrCreateUser(`${loginForm.username.value}`)
-    loginBar.innerHTML = `
-      <button class="btn btn-outline-light my-2 my-sm-0" type="submit" id="switch-btn">Switch User</button>
-      `
-    addListenerSwitchUser()
   })
 }
 
 const addListenerSwitchUser = () => {
-  const switchBtn = document.querySelector('#switch-btn')
-  switchBtn.addEventListener('click', ()=>{
-    loginBar.innerHTML = `
-    <form id="login-form" name="login" method="post" class="form-inline">
-      <input class="form-control mr-sm-2" type="text" placeholder="username" aria-label="username" name="username">
-      <button class="btn btn-outline-light my-2 my-sm-0" type="submit" name="submit">Login</button>
-    </form>`
-    addListenerLogin()
+  switchBtn.addEventListener('click', event => {
+    state.switchUser = !state.switchUser
+    if (state.switchUser) {
+      loginForm.style.display = 'block'
+    } else {
+      loginForm.style.display = 'none'
+    }
   })
 }
 
@@ -203,7 +199,14 @@ const findOrCreateUser = (username) => {
     makePage()
   }
   else {
-    alert("You are not a registered user. Please contact existing users for a high-level referral ლ( ̅°̅ ੪ ̅°̅ )ლ ")
+    const answer = confirm(`${username} is not a registered user. Contact existing users for an invitation to join this exclusive todolist ლ( ̅°̅ ੪ ̅°̅ )ლ If it's a typo, click OK to try again.`)
+    if (answer) {
+      loginForm.style.display = "block"
+      state.switchUser = !state.switchUser
+    } else {
+      loginForm.style.display = 'none'
+      loginForm.reset()
+    }
   }
 }
 
@@ -533,6 +536,7 @@ const makePage = () => {
   renderStuffFromState()
 }
 const addBasicListeners = () => {
+  addListenerSwitchUser()
   addListenerLogin()
   addNewTaskListener()
   addListenerToFilterTabItems()
