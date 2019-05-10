@@ -97,6 +97,7 @@ const addNewTaskForm = task => {
   saveTask.addEventListener("click", event => {
      event.preventDefault()
      addNewTask()
+     state.addTaskStatus = !state.addTaskStatus
    })
 
   cancelTask.addEventListener("click", event => {
@@ -136,7 +137,7 @@ const addNewTaskForm = task => {
    createTask(task)
    .then(task =>
      {
-     
+
      addTaskToArray(state.tasksInProject, task)
      renderTasks(state.tasksInProject)
      formEl.reset()
@@ -470,7 +471,7 @@ const renderTaskTr = (task) => {
       <td class="view-message text-center"></td>
     </tr>
     `
-    itemList.append(taskTr)  
+    itemList.append(taskTr)
   }
 
 }
