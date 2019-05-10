@@ -1,3 +1,6 @@
+body {
+    font-family: 'Poppins', sans-serif;
+}
 .mail-box {
     border-collapse: collapse;
     border-spacing: 0;
@@ -9,12 +12,16 @@
     width: 100%;
     display: inline-block;
 }
-.new-task .col-md-2 .col-md-4{
+.col-md-2 .col-md-4{
     padding-right: 15px;
     padding-left: 0px !important;
 }
 .login_bar {
     float: right;
+}
+.input-group-addon {
+
+     font-size: 10px !important; 
 }
 .new-row {
     width: 100%;
@@ -26,6 +33,13 @@
 }
 .input-group-addon:last-child {
     padding-right: 20px !important;
+}
+select {
+  font-family: 'FontAwesome', 'Poppins';
+  color: red;
+}
+.fa-facebook-square {
+  color: #3b5998;
 }
 .mail-box aside {
     display: table-cell;

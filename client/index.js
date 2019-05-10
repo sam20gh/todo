@@ -62,10 +62,10 @@ const addNewTaskForm = task => {
 
       <div class="col-md-2">
         <select id="priority" name="priority" class="form-control">
-          <option value="1">Priority 1</option>
-          <option value="2">Priority 2</option>
-          <option value="3">Priority 3</option>
-          <option value="4">Priority 4</option>
+          <option value="1" class="fa fa-pinterest-square fa-5x"  >&#xf024; Priority1 </option>
+          <option value="2" data-icon="glyphicon-music">&#xf11d; Priority 2</option>
+          <option value="3">&#xf11e; Priority 3</option>
+          <option value="4">&#xf0e7; Priority 4</option>
         </select>
       </div>
 
@@ -97,6 +97,7 @@ const addNewTaskForm = task => {
   saveTask.addEventListener("click", event => {
      event.preventDefault()
      addNewTask()
+    state.addTaskStatus = !state.addTaskStatus
    })
 
   cancelTask.addEventListener("click", event => {
@@ -109,8 +110,7 @@ const addNewTaskForm = task => {
   timeField.addEventListener("click", () => {
     event.preventDefault()
     $('#datetimepicker').datetimepicker({
-      inline: true,
-      sideBySide: true
+      sideBySide: true,
       });
   })
 
