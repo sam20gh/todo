@@ -55,72 +55,42 @@ const addNewTaskForm = task => {
   const newTaskTr = document.createElement('form')
   newTaskTr.id = 'task-form'
   newTaskTr.innerHTML = `
+   <div class="new-row">
+   
+    <div class="col-md-4">
+      <div class=view-message ><input type='text' class="form-control" placeholder="Task Description" name="description" required> </div>
+    </div>
+    
+    <div class="col-md-4">
+     <div class="form-group">
+      <div class='input-group date' id='datetimepicker'>
+        <input type='text' class="form-control" name="date" required />
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+      </div>
+     </div>
+    </div>
+
+    <div class="col-md-2">
+      <select id="priority" name="priority" class="form-control">
+        <option value="1">Priority 1</option>
+        <option value="2">Priority 2</option>
+        <option value="3">Priority 3</option>
+        <option value="4">Priority 4</option>
+      </select>
+    </div>
+  
+    <div class="col-md-2">
+      <select id="project" name="project-id" class="form-control"></select>
+    </div>
+    </div>
     <div class="new-row">
 
-      <div class="col-md-4">
-        <div class=view-message ><input type='text' class="form-control" placeholder="Task Description" name="description" required> </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="form-group">
-          <div class='input-group date' id='datetimepicker'>
-            <input type='text' class="form-control" name="date" required />
-            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-2">
-        <select id="priority" name="priority" class="form-control">
-          <option value="1" class="fa fa-pinterest-square fa-5x"  >&#xf024; Priority1 </option>
-          <option value="2" data-icon="glyphicon-music">&#xf11d; Priority 2</option>
-          <option value="3">&#xf11e; Priority 3</option>
-          <option value="4">&#xf0e7; Priority 4</option>
-        </select>
-      </div>
-
-      <div class="col-md-2">
-        <select id="project" name="project-id" class="form-control">
-          <!-- Dynamically generate projects here -->
-        </select>
-      </div>
-
-
-   <div class="new-row">
-   <div class="col-md-4">
-     <div class=view-message ><input type='text' class="form-control" placeholder="Task Description" name="description" required> </div>
-     </div>
-     <div class="col-md-4">
-     <div class="form-group">
-                <div class='input-group date' id='datetimepicker'>
-                    <input type='text' class="form-control" name="date" required />
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
-            </div>
-   </div>
-
-  <div class="col-md-2">
-    <select id="priority" name="priority" class="form-control">
-      <option value="1">Priority 1</option>
-      <option value="2">Priority 2</option>
-      <option value="3">Priority 3</option>
-      <option value="4">Priority 4</option>
-    </select>
-  </div>
-  <div class="col-md-2">
-    <select id="project" name="project-id" class="form-control">
-    </select>
-    </div>
-     </div>
-            <button type="button" class="btn btn-success" id="saveNewTask" >Save</button>
-            <button type="button" class="btn btn-danger" id="cancelNewTask" >Cancel</button>
+    <div class="pull-right">  <button type="button" class="btn btn-success" id="saveNewTask" >Save</button>
+      <button type="button" class="btn btn-danger" id="cancelNewTask" >Cancel</button></div>
 
     </div>
-
-    <button type="button" class="btn btn-success" id="saveNewTask" >Save</button>
-    <button type="button" class="btn btn-danger" id="cancelNewTask" >Cancel</button>
    `
   const renderProjectOption = project => {
     const optionEl = document.createElement('option')
@@ -175,8 +145,11 @@ const addNewTaskForm = task => {
     newTaskTr.innerHTML = ``
 
     createTask(task).then(task => {
-      addTaskToArray(state.tasksInProject, task)
+      addItemToArray(state.tasksInProject, task)
       renderTasks(state.tasksInProject)
+      if (task.project_id === state.selectedProject.id) {
+        reRenderProjectLi(state.selectedProject)
+      }
       formEl.reset()
     })
   }
@@ -438,6 +411,57 @@ const renderProjectLi = project => {
   }
 }
 
+const reRenderProjectLi = project => {
+  if (project.id === state.inboxId) {
+    const selectedProjectLi = document.querySelector(`#inbox-tab`)
+
+    selectedProjectLi.innerHTML = `
+    <a href="#"><i class="fa fa-inbox"></i> 
+        Inbox
+        <span class="label label-info pull-right">${findOutstandingTasksInProject(
+          project.id
+        ).length + 1}</span>
+      </a>
+    `
+
+    selectedProjectLi.addEventListener('click', () => {
+      state.selectedProject = project
+      renderProjectHeader()
+      renderTasks(findOutstandingTasksInProject(project.id))
+    })
+  } else {
+    const selectedProjectLi = document.querySelector(
+      `#project-count-${project.id}`
+    )
+
+    selectedProjectLi.innerHTML = `
+      <a href="#">
+        <i class="fa fa-circle text-danger"></i>
+        ${project.name}
+        <span class="label label-default pull-right" id='edit-project-${
+          project.id
+        }'>Edit</span>
+        <span class="label label-info pull-right">${findOutstandingTasksInProject(
+          project.id
+        ).length + 1}</span>
+      </a>
+    `
+
+    const editBtn = selectedProjectLi.querySelector('.label-default')
+    editBtn.addEventListener('click', event => {
+      event.stopPropagation()
+      state.selectedProject = project
+      editProject(project)
+    })
+
+    selectedProjectLi.addEventListener('click', () => {
+      state.selectedProject = project
+      renderProjectHeader()
+      renderTasks(findOutstandingTasksInProject(project.id))
+    })
+  }
+}
+
 const editProject = project => {
   const selectedProjectLi = document.querySelector(
     `#project-count-${project.id}`
@@ -558,13 +582,14 @@ const dateTimeParser = datestr => {
 }
 
 const renderTaskTr = task => {
-  if (task) {
-    const taskTr = document.createElement('tr')
-    taskTr.id = `task-row${task.id}`
-    let taskProjectName = state.allProjects.find(p => p.id == task.project_id)
-      .name
-    let parsedDate = dateTimeParser(task.due_date)
-    taskTr.innerHTML = `
+  if (task.project_id === state.selectedProject.id) {
+    if (task) {
+      const taskTr = document.createElement('tr')
+      taskTr.id = `task-row${task.id}`
+      let taskProjectName = state.allProjects.find(p => p.id == task.project_id)
+        .name
+      let parsedDate = dateTimeParser(task.due_date)
+      taskTr.innerHTML = `
         <td class="inbox-small-cells">
           <input type="checkbox" class="mail-checkbox" name="checkbox">
         </td>
@@ -577,20 +602,20 @@ const renderTaskTr = task => {
         <td class="view-message text-right">${parsedDate}</td>
       </tr>
     `
-    itemList.append(taskTr)
-    const archiveTask = taskTr.querySelector('.mail-checkbox')
-    archiveTask.addEventListener('click', event => {
-      event.preventDefault()
-      task.status = true
-      taskTr.innerHTML = ``
-      findAllOutstandingTasks()
-      findAllCompletedTasks()
-      updateTask(task)
-    })
-  } else {
-    itemList.innerHTML = ``
-    const taskTr = document.createElement('tr')
-    taskTr.innerHTML = `
+      itemList.append(taskTr)
+      const archiveTask = taskTr.querySelector('.mail-checkbox')
+      archiveTask.addEventListener('click', event => {
+        event.preventDefault()
+        task.status = true
+        taskTr.innerHTML = ``
+        findAllOutstandingTasks()
+        findAllCompletedTasks()
+        updateTask(task)
+      })
+    } else {
+      itemList.innerHTML = ``
+      const taskTr = document.createElement('tr')
+      taskTr.innerHTML = `
       <td class="view-message text-center"> </td>
       <td class="view-message text-center"> </td>
       <td class="view-message text-center">No task in here at the moment - everything is in order!</td>
@@ -598,7 +623,8 @@ const renderTaskTr = task => {
       <td class="view-message text-center"></td>
     </tr>
     `
-    itemList.append(taskTr)
+      itemList.append(taskTr)
+    }
   }
 }
 
