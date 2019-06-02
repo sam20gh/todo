@@ -216,9 +216,10 @@ const findOrCreateUser = username => {
     state.user = user
     state.users = allUsers
     makePage()
+    loginForm.style.display = 'none'
   } else {
     const answer = confirm(
-      `${username} is not a registered user. Contact existing users for an invitation to join this exclusive todolist ლ( ̅°̅ ੪ ̅°̅ )ლ If it's a typo, click OK to try again.`
+      `${username} is not a registered user. Contact existing users i.e. Sam or JX for an invitation to join this exclusive todolist ლ( ̅°̅ ੪ ̅°̅ )ლ If it's a typo, click OK to try again.`
     )
     if (answer) {
       loginForm.style.display = 'block'
