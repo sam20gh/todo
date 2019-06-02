@@ -144,12 +144,11 @@ const addNewTaskForm = task => {
 
     newTaskTr.innerHTML = ``
 
+    let taskProject = state.allProjects.find(p => p.id == task.project_id)
     createTask(task).then(task => {
       addItemToArray(state.tasksInProject, task)
       renderTasks(state.tasksInProject)
-      if (task.project_id === state.selectedProject.id) {
-        reRenderProjectLi(state.selectedProject)
-      }
+      reRenderProjectLi(taskProject, 'increase')
       formEl.reset()
     })
   }
@@ -412,18 +411,35 @@ const renderProjectLi = project => {
   }
 }
 
-const reRenderProjectLi = project => {
+const reRenderProjectLi = (project, str) => {
   if (project.id === state.inboxId) {
     const selectedProjectLi = document.querySelector(`#inbox-tab`)
 
-    selectedProjectLi.innerHTML = `
-    <a href="#"><i class="fa fa-inbox"></i> 
+    if (str === 'increase') {
+      selectedProjectLi.innerHTML = `
+      <a href="#"><i class="fa fa-inbox"></i> 
+          Inbox
+          <span class="label label-info pull-right">${findOutstandingTasksInProject(
+            project.id
+          ).length + 1}</span>
+      </a>
+      `
+    } else {
+      selectedProjectLi.innerHTML = `
+       <a href="#"><i class="fa fa-inbox"></i> 
         Inbox
-        <span class="label label-info pull-right">${findOutstandingTasksInProject(
-          project.id
-        ).length + 1}</span>
+        <span class="label label-info pull-right">${
+          findOutstandingTasksInProject(project.id).length
+        }</span>
       </a>
     `
+    }
+
+    selectedProjectLi.addEventListener('click', () => {
+      state.selectedProject = project
+      renderProjectHeader()
+      renderTasks(findOutstandingTasksInProject(project.id))
+    })
 
     selectedProjectLi.addEventListener('click', () => {
       state.selectedProject = project
@@ -435,7 +451,8 @@ const reRenderProjectLi = project => {
       `#project-count-${project.id}`
     )
 
-    selectedProjectLi.innerHTML = `
+    if (str === 'increase') {
+      selectedProjectLi.innerHTML = `
       <a href="#">
         <i class="fa fa-circle text-danger"></i>
         ${project.name}
@@ -447,6 +464,20 @@ const reRenderProjectLi = project => {
         ).length + 1}</span>
       </a>
     `
+    } else {
+      selectedProjectLi.innerHTML = `
+      <a href="#">
+        <i class="fa fa-circle text-danger"></i>
+        ${project.name}
+        <span class="label label-default pull-right" id='edit-project-${
+          project.id
+        }'>Edit</span>
+        <span class="label label-info pull-right">${
+          findOutstandingTasksInProject(project.id).length
+        }</span>
+      </a>
+    `
+    }
 
     const editBtn = selectedProjectLi.querySelector('.label-default')
     editBtn.addEventListener('click', event => {
@@ -488,6 +519,10 @@ const editProject = project => {
   editProjectForm.addEventListener('submit', event => {
     event.preventDefault()
     state.selectedProject.name = editProjectForm['project-name'].value
+    const projectHeader = document.querySelector('#project-title')
+    projectHeader.innerHTML = `<h3>${
+      editProjectForm['project-name'].value
+    }</h3>`
     editProjectOnServer().then(renderProjects(state.allProjects))
   })
 
@@ -583,14 +618,14 @@ const dateTimeParser = datestr => {
 }
 
 const renderTaskTr = task => {
-  if (task.project_id === state.selectedProject.id) {
-    if (task) {
-      const taskTr = document.createElement('tr')
-      taskTr.id = `task-row${task.id}`
-      let taskProjectName = state.allProjects.find(p => p.id == task.project_id)
-        .name
-      let parsedDate = dateTimeParser(task.due_date)
-      taskTr.innerHTML = `
+  if (task) {
+    // if (state.selectedProject.id && task.project_id === state.selectedProject.id) {
+    const taskTr = document.createElement('tr')
+    taskTr.id = `task-row${task.id}`
+    let taskProjectName = state.allProjects.find(p => p.id == task.project_id)
+      .name
+    let parsedDate = dateTimeParser(task.due_date)
+    taskTr.innerHTML = `
         <td class="inbox-small-cells">
           <input type="checkbox" class="mail-checkbox" name="checkbox">
         </td>
@@ -603,20 +638,22 @@ const renderTaskTr = task => {
         <td class="view-message text-right">${parsedDate}</td>
       </tr>
     `
-      itemList.append(taskTr)
-      const archiveTask = taskTr.querySelector('.mail-checkbox')
-      archiveTask.addEventListener('click', event => {
-        event.preventDefault()
-        task.status = true
-        taskTr.innerHTML = ``
-        findAllOutstandingTasks()
-        findAllCompletedTasks()
-        updateTask(task)
-      })
-    } else {
-      itemList.innerHTML = ``
-      const taskTr = document.createElement('tr')
-      taskTr.innerHTML = `
+    itemList.append(taskTr)
+    const archiveTask = taskTr.querySelector('.mail-checkbox')
+    archiveTask.addEventListener('click', event => {
+      event.preventDefault()
+      task.status = true
+      taskTr.innerHTML = ``
+      findAllOutstandingTasks()
+      findAllCompletedTasks()
+      updateTask(task)
+      let taskProject = state.allProjects.find(p => p.id == task.project_id)
+      reRenderProjectLi(taskProject, 'decrease')
+    })
+  } else {
+    itemList.innerHTML = ``
+    const taskTr = document.createElement('tr')
+    taskTr.innerHTML = `
       <td class="view-message text-center"> </td>
       <td class="view-message text-center"> </td>
       <td class="view-message text-center">No task in here at the moment - everything is in order!</td>
@@ -624,12 +661,9 @@ const renderTaskTr = task => {
       <td class="view-message text-center"></td>
     </tr>
     `
-      itemList.append(taskTr)
-    }
+    itemList.append(taskTr)
   }
 }
-
-//vcreate new task
 
 const renderTasks = tasks => {
   if (tasks.length > 0) {
@@ -649,7 +683,9 @@ const renderStuffFromState = () => {
   renderNavigationLi()
   renderProjectHeader()
   renderProjects(state.allProjects)
-  renderTasks(state.tasksInProject)
+  if (state.tasksInProject.length > 0) {
+    renderTasks(state.tasksInProject)
+  }
 }
 const makePage = () => {
   clearPreviousData()
