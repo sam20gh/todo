@@ -30,10 +30,9 @@ let state = {
   archivedProjects: [],
   selectedProject: null,
   tasksInProject: [],
-
   selectedTask: null,
   newTask: [],
-  switchUser: false
+  switchUser: false,
   addTaskStatus: false
 
 }
