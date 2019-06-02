@@ -30,16 +30,20 @@ let state = {
   archivedProjects: [],
   selectedProject: null,
   tasksInProject: [],
+
   selectedTask: null,
   newTask: [],
   switchUser: false
+  addTaskStatus: false
+
 }
 
 //new Task event listener
 const addNewTaskListener = () => {
-  newTaskButtonLeft.addEventListener("click", event => {
-    event.preventDefault()
-    addNewTaskForm()
+  newTaskButtonLeft.addEventListener("click", () => {
+    if (!state.addTaskStatus){
+      addNewTaskForm()
+      state.addTaskStatus = !state.addTaskStatus}
   })
 }
 
@@ -47,6 +51,36 @@ const addNewTaskForm = task => {
   const newTaskTr = document.createElement('form')
   newTaskTr.id = "task-form"
   newTaskTr.innerHTML = `
+    <div class="new-row">
+
+      <div class="col-md-4">
+        <div class=view-message ><input type='text' class="form-control" placeholder="Task Description" name="description" required> </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="form-group">
+          <div class='input-group date' id='datetimepicker'>
+            <input type='text' class="form-control" name="date" required />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <select id="priority" name="priority" class="form-control">
+          <option value="1" class="fa fa-pinterest-square fa-5x"  >&#xf024; Priority1 </option>
+          <option value="2" data-icon="glyphicon-music">&#xf11d; Priority 2</option>
+          <option value="3">&#xf11e; Priority 3</option>
+          <option value="4">&#xf0e7; Priority 4</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <select id="project" name="project-id" class="form-control">
+          <!-- Dynamically generate projects here -->
+        </select>
+      </div>
+
 
    <div class="new-row">
    <div class="col-md-4">
@@ -78,47 +112,46 @@ const addNewTaskForm = task => {
      </div>
             <button type="button" class="btn btn-success" id="saveNewTask" >Save</button>
             <button type="button" class="btn btn-danger" id="cancelNewTask" >Cancel</button>
+
     </div>
 
+    <button type="button" class="btn btn-success" id="saveNewTask" >Save</button>
+    <button type="button" class="btn btn-danger" id="cancelNewTask" >Cancel</button>
    `
-  const renderOption = project => {
+  const renderProjectOption = project => {
     const optionEl = document.createElement('option')
     optionEl.value = project.id
-    optionEl.innerText = `
-   ${project.name}
-  `
-    const projectDd = newTaskTr.querySelector("#project")
-    projectDd.append(optionEl)
+    optionEl.innerText = `${project.name}`
+
+    const projectDropdown = newTaskTr.querySelector("#project")
+    projectDropdown.append(optionEl)
   }
-  const renderOptions = projects => {
-    projects.forEach(renderOption)
-  }
-  renderOptions(state.allProjects)
+
+  const renderProjectOptions = projects => projects.forEach(renderProjectOption)
+
+  renderProjectOptions(state.allProjects)
   const saveTask = newTaskTr.querySelector("#saveNewTask")
   const cancelTask = newTaskTr.querySelector("#cancelNewTask")
   saveTask.addEventListener("click", event => {
      event.preventDefault()
      addNewTask()
+     state.addTaskStatus = !state.addTaskStatus
    })
-
 
   cancelTask.addEventListener("click", event => {
     event.preventDefault()
-    newTaskTr.innerHTML = ``
+    newTaskTr.remove()
+    state.addTaskStatus = !state.addTaskStatus
   })
-
 
   const timeField = newTaskTr.querySelector("#datetimepicker")
   timeField.addEventListener("click", () => {
     event.preventDefault()
-    console.log("done")
     $('#datetimepicker').datetimepicker({
-      inline: true,
-      sideBySide: true
+      sideBySide: true,
       });
 
   })
-
 
   const addNewTask = () => {
   const formEl = document.querySelector("#task-form")
@@ -128,29 +161,31 @@ const addNewTaskForm = task => {
   state.newTask.project = formEl.project.value
   formEl.reset()
 
-
-
   let task = {
      description: state.newTask.name,
      due_date: new Date(state.newTask.date).toISOString(),
      status: false,
-
      priority: state.newTask.priority,
      project_id: state.newTask.project
    }
 
 
-   createTask(task)
    newTaskTr.innerHTML = ``
-   alert("task added")
+
+   createTask(task)
+   .then(task =>
+     {
+
+     addTaskToArray(state.tasksInProject, task)
+     renderTasks(state.tasksInProject)
+     formEl.reset()
+   })
  }
 
 
    const itemList = document.querySelector(".new-task")
    itemList.prepend(newTaskTr)
- }
-
-
+}
 
 // Switch user event listener
 
@@ -474,19 +509,31 @@ const renderTaskTr = (task) => {
   if (task) {
     const taskTr = document.createElement('tr')
     taskTr.id = `task-row${task.id}`
+    let taskProjectName = state.allProjects.find( p => p.id == task.project_id).name
     let parsedDate = dateTimeParser(task.due_date)
     taskTr.innerHTML = `
         <td class="inbox-small-cells">
-          <input type="checkbox" class="mail-checkbox">
+          <input type="checkbox" class="mail-checkbox" name="checkbox">
         </td>
         <td class="inbox-small-cells"><i class="fa fa-heart" aria-hidden="true"></i></td>
         <td class="view-message ">${task.description}</td>
-        <td class="view-message inbox-small-cells"><i>${task.priority}</i></td>
-        <td class="view-message inbox-small-cells"><i class="fa fa-edit"></i></td>
+        <td class="view-message inbox-small-cells text-right"><i>${taskProjectName}</i></td>
+        <td class="view-message inbox-small-cells text-right"><i>Priority: ${task.priority}</i></td>
         <td class="view-message text-right">${parsedDate}</td>
       </tr>
     `
     itemList.append(taskTr)
+    const archiveTask = taskTr.querySelector(".mail-checkbox")
+    archiveTask.addEventListener('click', event => {
+      event.preventDefault()
+      task.status = true
+      taskTr.innerHTML =``
+      findAllOutstandingTasks()
+      findAllCompletedTasks()
+      updateTask(task)
+    })
+
+
   } else {
     itemList.innerHTML = ``
     const taskTr = document.createElement('tr')
@@ -504,13 +551,7 @@ const renderTaskTr = (task) => {
 }
 
 //vcreate new task
-const createTask = task => {
-  fetch(baseUrl, {
-    method: "POST",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(task)
-  }).then(resp => resp.json())
-}
+
 
 const renderTasks = (tasks) => {
   if (tasks.length > 0) {
